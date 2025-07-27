@@ -14,7 +14,7 @@ export function generateSlug(title: string): string {
 
 export function generateExcerpt(content: string): string {
   // Extract first user message
-  const userMatch = content.match(/### 🧑‍💻 User\s*\n\n(.*?)(?=\n\n---|\n\n###|$)/s);
+  const userMatch = content.match(/### 🧑‍💻 User\s*\n\n([\s\S]*?)(?=\n\n---|\n\n###|$)/);
   if (userMatch) {
     return userMatch[1].trim().substring(0, 150) + '...';
   }
