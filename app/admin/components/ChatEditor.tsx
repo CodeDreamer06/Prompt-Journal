@@ -202,12 +202,14 @@ Another response from the AI`;
 
           {/* Preview */}
           {showPreview && (
-            <div className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
+            <div className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800 max-h-[600px] overflow-y-auto">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 Preview
               </h3>
               {content.trim() ? (
-                <ChatViewer content={content} />
+                <div className="prose prose-sm dark:prose-invert max-w-none">
+                  <ChatViewer content={content} />
+                </div>
               ) : (
                 <div className="text-gray-500 dark:text-gray-400 text-center py-8">
                   Enter content to see preview
