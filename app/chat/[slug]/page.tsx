@@ -8,13 +8,14 @@ import LLMBadge from '@/components/LLMBadge';
 import ThemeToggle from '@/components/ThemeToggle';
 
 interface ChatPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
-export default function ChatPage({ params }: ChatPageProps) {
-  const chat = getChatBySlug(params.slug);
+export default async function ChatPage({ params }: ChatPageProps) {
+  const { slug } = await params;
+  const chat = getChatBySlug(slug);
 
   if (!chat || !chat.isPublished) {
     notFound();

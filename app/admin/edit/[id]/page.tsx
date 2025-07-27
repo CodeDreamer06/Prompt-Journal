@@ -9,25 +9,32 @@ import AdminLayout from '../../components/AdminLayout';
 import ChatEditor from '../../components/ChatEditor';
 
 interface EditChatPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function EditChatPage({ params }: EditChatPageProps) {
   const [chat, setChat] = useState<Chat | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [chatId, setChatId] = useState<string>('');
   const router = useRouter();
 
   useEffect(() => {
-    setMounted(true);
-    const loadedChat = getChatById(params.id);
-    if (!loadedChat) {
-      notFound();
-    }
-    setChat(loadedChat);
-  }, [params.id]);
+    const loadParams = async () => {
+      const { id } = await params;
+      setChatId(id);
+      setMounted(true);
+      const loadedChat = getChatById(id);
+      if (!loadedChat) {
+        notFound();
+      }
+      setChat(loadedChat);
+    };
+    
+    loadParams();
+  }, [params]);
 
   const handleSave = async (data: {
     title: string;

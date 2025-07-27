@@ -82,9 +82,11 @@ export default function ChatViewer({ content, className = '' }: ChatViewerProps)
           <div className="prose dark:prose-invert max-w-none">
             <ReactMarkdown
               components={{
-                code({ node, inline, className, children, ...props }) {
+                code({ className, children, ...props }: any) {
                   const match = /language-(\w+)/.exec(className || '');
-                  return !inline && match ? (
+                  const isInline = !match;
+                  
+                  return !isInline ? (
                     <SyntaxHighlighter
                       style={isDark ? oneDark : oneLight}
                       language={match[1]}
