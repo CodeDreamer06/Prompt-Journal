@@ -57,7 +57,7 @@ export default function SearchBar({ onSearch, availableTags }: SearchBarProps) {
           <option value="">All LLMs</option>
           {Object.entries(LLM_CONFIGS).map(([key, config]) => (
             <option key={key} value={key}>
-              {config.logo} {config.name}
+              {config.name}
             </option>
           ))}
         </select>

@@ -1,24 +1,38 @@
-import { notFound } from 'next/navigation';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams, notFound } from 'next/navigation';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
-import { ArrowLeft, Share2, Copy } from 'lucide-react';
+import { ArrowLeft, Share2 } from 'lucide-react';
 import { getChatBySlug } from '@/lib/storage';
+import { Chat } from '@/lib/types';
 import ChatViewer from '@/components/ChatViewer';
 import LLMBadge from '@/components/LLMBadge';
 import ThemeToggle from '@/components/ThemeToggle';
 
-interface ChatPageProps {
-  params: Promise<{
-    slug: string;
-  }>;
-}
+export default function ChatPage() {
+  const params = useParams();
+  const [chat, setChat] = useState<Chat | null>(null);
+  const [mounted, setMounted] = useState(false);
 
-export default async function ChatPage({ params }: ChatPageProps) {
-  const { slug } = await params;
-  const chat = getChatBySlug(slug);
+  useEffect(() => {
+    setMounted(true);
+    if (params.slug) {
+      const loadedChat = getChatBySlug(params.slug as string);
+      if (!loadedChat || !loadedChat.isPublished) {
+        notFound();
+      }
+      setChat(loadedChat);
+    }
+  }, [params.slug]);
 
-  if (!chat || !chat.isPublished) {
-    notFound();
+  if (!mounted || !chat) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
   }
 
   return (
@@ -41,7 +55,7 @@ export default async function ChatPage({ params }: ChatPageProps) {
                   if (navigator.share) {
                     navigator.share({
                       title: chat.title,
-                      text: chat.excerpt,
+                      text: chat.excerpt || '',
                       url: window.location.href,
                     });
                   } else {
