@@ -9,15 +9,17 @@ export function checkAdminAuth(): boolean {
   return session === 'authenticated';
 }
 
-export function setAdminAuth(): void {
+export function setAdminAuth(password: string): void {
   if (typeof window !== 'undefined') {
     sessionStorage.setItem(ADMIN_SESSION_KEY, 'authenticated');
+    sessionStorage.setItem('prompt-journal-admin-password', password);
   }
 }
 
 export function clearAdminAuth(): void {
   if (typeof window !== 'undefined') {
     sessionStorage.removeItem(ADMIN_SESSION_KEY);
+    sessionStorage.removeItem('prompt-journal-admin-password');
   }
 }
 
