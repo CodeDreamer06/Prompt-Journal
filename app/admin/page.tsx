@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { Plus, Edit, Trash2, Eye, EyeOff, Download, Upload } from 'lucide-react';
@@ -17,7 +17,7 @@ export default function AdminPage() {
   const [error, setError] = useState('');
   const [chats, setChats] = useState<Chat[]>([]);
   const [mounted, setMounted] = useState(false);
-  const router = useRouter();
+  // const router = useRouter(); // Unused for now
 
   useEffect(() => {
     setMounted(true);
@@ -89,7 +89,7 @@ export default function AdminPage() {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-    } catch (error) {
+    } catch {
       alert('Export failed');
     }
   };
@@ -102,7 +102,7 @@ export default function AdminPage() {
     reader.onload = async (event) => {
       try {
         const content = event.target?.result as string;
-        const importedChats = JSON.parse(content);
+        JSON.parse(content); // Parse to validate format
         
         // Use the migration endpoint to import chats
         const result = await migrateLocalStorageChats();
@@ -112,7 +112,7 @@ export default function AdminPage() {
         } else {
           alert('Import failed. Please check the file format.');
         }
-      } catch (error) {
+      } catch {
         alert('Import failed. Invalid file format.');
       }
     };

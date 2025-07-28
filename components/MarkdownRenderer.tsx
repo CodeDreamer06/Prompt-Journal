@@ -48,7 +48,7 @@ export default function MarkdownRenderer({
         remarkPlugins={[remarkMath]}
         rehypePlugins={[rehypeKatex]}
         components={{
-          code({ className, children, ...props }: any) {
+          code({ className, children, ...props }) {
             const match = /language-(\w+)/.exec(className || '');
             const isInline = !match;
             const codeString = String(children).replace(/\n$/, '');

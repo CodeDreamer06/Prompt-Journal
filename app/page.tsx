@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
-import { Search, Plus, Settings } from 'lucide-react';
+import { Search, Settings } from 'lucide-react';
 import { Chat } from '@/lib/types';
 import { loadPublicChats } from '@/lib/api-storage';
 import LLMBadge from '@/components/LLMBadge';

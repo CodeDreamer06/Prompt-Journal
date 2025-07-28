@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     const chatsData = await redis.get(CHATS_KEY);
     const chats: Chat[] = chatsData ? JSON.parse(chatsData) : [];
     
-    let result: any = { success: true };
+    const result: { success: boolean; [key: string]: unknown } = { success: true };
     
     switch (operation.type) {
       case 'delete':
