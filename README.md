@@ -103,10 +103,10 @@ graph TB
     end
     
     subgraph "Backend"
-        D --> J[/api/chats - Public API]
-        D --> K[/api/chats/admin - Admin API]
-        D --> L[/api/chats/[slug] - Individual Chat]
-        D --> M[/api/chats/migrate - Migration]
+        D --> J["API: /api/chats - Public API"]
+        D --> K["API: /api/chats/admin - Admin API"]
+        D --> L["API: /api/chats/slug - Individual Chat"]
+        D --> M["API: /api/chats/migrate - Migration"]
     end
 ```
 
