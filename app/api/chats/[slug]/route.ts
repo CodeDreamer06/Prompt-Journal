@@ -1,10 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@vercel/kv';
-
-const kv = createClient({
-  url: process.env.REDIS_URL!,
-  token: process.env.REDIS_URL!.split('@')[0].split('//')[1].split(':')[1]
-});
+import { kv } from '@vercel/kv';
 import { Chat } from '@/lib/types';
 
 const CHATS_KEY = 'prompt-journal:chats';
