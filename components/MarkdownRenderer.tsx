@@ -58,11 +58,11 @@ export default function MarkdownRenderer({
               <div className="relative group my-4">
                 <button
                   onClick={() => copyCodeToClipboard(codeString, blockId)}
-                  className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity p-2 bg-gray-800/80 dark:bg-gray-200/80 hover:bg-gray-800 dark:hover:bg-gray-200 rounded text-white dark:text-gray-900"
+                  className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity p-2 bg-gray-700/60 dark:bg-gray-600/60 hover:bg-gray-700/80 dark:hover:bg-gray-600/80 rounded text-gray-300 dark:text-gray-400 hover:text-white dark:hover:text-gray-200"
                   title="Copy code"
                 >
                   {copiedCodeBlock === blockId ? (
-                    <Check className="w-4 h-4" />
+                    <span className="text-xs text-green-400">Copied!</span>
                   ) : (
                     <Copy className="w-4 h-4" />
                   )}
@@ -72,11 +72,12 @@ export default function MarkdownRenderer({
                   style={(mounted && resolvedTheme === 'dark' ? oneDark : oneLight) as any}
                   language={match[1]}
                   PreTag="div"
-                  showLineNumbers={true}
+                  showLineNumbers={false}
                   customStyle={{
                     margin: 0,
                     borderRadius: '0.5rem',
                     border: 'none',
+                    backgroundColor: mounted && resolvedTheme === 'dark' ? '#1a1a1a' : '#f8f8f8',
                   }}
                 >
                   {codeString}
