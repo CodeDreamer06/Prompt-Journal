@@ -18,8 +18,8 @@ export async function GET() {
     const chatsData = await redis.get(CHATS_KEY);
     const chats: Chat[] = chatsData ? JSON.parse(chatsData) : [];
     
-    // Only return published chats for public API
-    const publishedChats = chats.filter(chat => chat.isPublished);
+    // Only return published chats for public API (excluding unlisted)
+    const publishedChats = chats.filter(chat => chat.isPublished && !chat.isUnlisted);
     return NextResponse.json(publishedChats);
   } catch (error) {
     console.error('Error fetching chats:', error);

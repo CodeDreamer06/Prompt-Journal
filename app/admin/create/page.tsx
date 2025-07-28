@@ -22,7 +22,14 @@ export default function CreateChatPage() {
     setIsLoading(true);
     
     try {
-      const newChat = await saveChat(data);
+      const chatData = {
+        ...data,
+        isUnlisted: false,
+        views: 0,
+        readingTime: 1,
+        isDraft: false
+      };
+      const newChat = await saveChat(chatData);
       if (newChat) {
         router.push('/admin');
       } else {
