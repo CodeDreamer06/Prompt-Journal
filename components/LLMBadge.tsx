@@ -10,6 +10,15 @@ interface LLMBadgeProps {
 export default function LLMBadge({ llm, size = 'md' }: LLMBadgeProps) {
   const config = LLM_CONFIGS[llm];
   
+  // Fallback if config doesn't exist
+  if (!config) {
+    return (
+      <span className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full">
+        {llm || 'Unknown LLM'}
+      </span>
+    );
+  }
+  
   const sizeClasses = {
     sm: 'px-2 py-1 text-xs',
     md: 'px-3 py-1.5 text-sm',
