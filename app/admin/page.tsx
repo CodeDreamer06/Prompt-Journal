@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { Plus, Edit, Trash2, Eye, EyeOff, Download, Upload } from 'lucide-react';
 import { checkAdminAuth, setAdminAuth, verifyPassword } from '@/lib/auth';
-import { loadChats, deleteChat, updateChat, exportChats, importChats } from '@/lib/storage';
+import { loadAllChats, deleteChat, updateChat, migrateLocalStorageChats } from '@/lib/api-storage';
 import { Chat } from '@/lib/types';
 import LLMBadge from '@/components/LLMBadge';
 import AdminLayout from './components/AdminLayout';
@@ -29,47 +29,69 @@ export default function AdminPage() {
     }
   }, []);
 
-  const loadChatsData = () => {
-    const loadedChats = loadChats();
+  const loadChatsData = async () => {
+    const loadedChats = await loadAllChats();
     setChats(loadedChats);
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (verifyPassword(password)) {
-      setAdminAuth();
+      setAdminAuth(password);
       setIsAuthenticated(true);
       setError('');
-      loadChatsData();
+      
+      // Check for localStorage migration
+      const localChats = localStorage.getItem('prompt-journal-chats');
+      if (localChats) {
+        const result = await migrateLocalStorageChats();
+        if (result.success) {
+          alert(`Migration successful: ${result.message}`);
+        }
+      }
+      
+      await loadChatsData();
     } else {
       setError('Invalid password');
     }
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this chat?')) {
-      deleteChat(id);
-      loadChatsData();
+      const success = await deleteChat(id);
+      if (success) {
+        await loadChatsData();
+      } else {
+        alert('Failed to delete chat');
+      }
     }
   };
 
-  const togglePublished = (id: string, isPublished: boolean) => {
-    updateChat(id, { isPublished: !isPublished });
-    loadChatsData();
+  const togglePublished = async (id: string, isPublished: boolean) => {
+    const success = await updateChat(id, { isPublished: !isPublished });
+    if (success) {
+      await loadChatsData();
+    } else {
+      alert('Failed to update chat');
+    }
   };
 
-  const handleExport = () => {
-    const data = exportChats();
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `prompt-journal-backup-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  const handleExport = async () => {
+    try {
+      const data = JSON.stringify(chats, null, 2);
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `prompt-journal-backup-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      alert('Export failed');
+    }
   };
 
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,13 +99,21 @@ export default function AdminPage() {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (event) => {
-      const content = event.target?.result as string;
-      if (importChats(content)) {
-        loadChatsData();
-        alert('Import successful!');
-      } else {
-        alert('Import failed. Please check the file format.');
+    reader.onload = async (event) => {
+      try {
+        const content = event.target?.result as string;
+        const importedChats = JSON.parse(content);
+        
+        // Use the migration endpoint to import chats
+        const result = await migrateLocalStorageChats();
+        if (result.success) {
+          await loadChatsData();
+          alert('Import successful!');
+        } else {
+          alert('Import failed. Please check the file format.');
+        }
+      } catch (error) {
+        alert('Import failed. Invalid file format.');
       }
     };
     reader.readAsText(file);

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { LLMType } from '@/lib/types';
 import { LLM_CONFIGS } from '@/lib/llms';
-import { generateSlug } from '@/lib/storage';
+import { generateSlug } from '@/lib/api-storage';
 import ChatViewer from '@/components/ChatViewer';
 
 interface ChatEditorProps {

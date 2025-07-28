@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { ArrowLeft, Share2 } from 'lucide-react';
-import { getChatBySlug } from '@/lib/storage';
+import { getChatBySlug } from '@/lib/api-storage';
 import { Chat } from '@/lib/types';
 import ChatViewer from '@/components/ChatViewer';
 import LLMBadge from '@/components/LLMBadge';
@@ -19,14 +19,19 @@ export default function ChatPage() {
 
   useEffect(() => {
     setMounted(true);
-    if (params.slug) {
-      const loadedChat = getChatBySlug(params.slug as string);
-      if (!loadedChat || !loadedChat.isPublished) {
-        setNotFound(true);
-      } else {
-        setChat(loadedChat);
+    
+    const loadChatData = async () => {
+      if (params.slug) {
+        const loadedChat = await getChatBySlug(params.slug as string);
+        if (!loadedChat) {
+          setNotFound(true);
+        } else {
+          setChat(loadedChat);
+        }
       }
-    }
+    };
+    
+    loadChatData();
   }, [params.slug]);
 
   if (!mounted) {

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { saveChat } from '@/lib/storage';
+import { saveChat } from '@/lib/api-storage';
 import { LLMType } from '@/lib/types';
 import AdminLayout from '../components/AdminLayout';
 import ChatEditor from '../components/ChatEditor';
@@ -22,8 +22,12 @@ export default function CreateChatPage() {
     setIsLoading(true);
     
     try {
-      const newChat = saveChat(data);
-      router.push('/admin');
+      const newChat = await saveChat(data);
+      if (newChat) {
+        router.push('/admin');
+      } else {
+        alert('Failed to save chat. Please try again.');
+      }
     } catch (error) {
       console.error('Failed to save chat:', error);
       alert('Failed to save chat. Please try again.');
