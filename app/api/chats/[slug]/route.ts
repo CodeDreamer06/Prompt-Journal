@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
+import { createClient } from 'redis';
 import { Chat } from '@/lib/types';
 
 const CHATS_KEY = 'prompt-journal:chats';
+
+const redis = createClient({
+  url: process.env.REDIS_URL
+});
 
 // GET /api/chats/[slug] - Get specific chat by slug
 export async function GET(
@@ -11,7 +15,13 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
-    const chats = await kv.get<Chat[]>(CHATS_KEY) || [];
+    
+    if (!redis.isOpen) {
+      await redis.connect();
+    }
+    
+    const chatsData = await redis.get(CHATS_KEY);
+    const chats: Chat[] = chatsData ? JSON.parse(chatsData) : [];
     
     const chat = chats.find(chat => chat.slug === slug && chat.isPublished);
     
