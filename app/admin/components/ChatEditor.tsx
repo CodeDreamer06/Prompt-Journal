@@ -132,9 +132,9 @@ Another response from the AI`;
           </div>
         </div>
 
-        <div className={`grid gap-6 ${showPreview ? 'lg:grid-cols-2' : 'grid-cols-1'}`}>
+        <div className={`grid gap-6 ${showPreview ? 'lg:grid-cols-5' : 'grid-cols-1'}`}>
           {/* Editor */}
-          <div className="space-y-4">
+          <div className={`space-y-4 ${showPreview ? 'lg:col-span-2' : ''}`}>
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Title
@@ -202,7 +202,7 @@ Another response from the AI`;
 
           {/* Preview */}
           {showPreview && (
-            <div className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800 max-h-[600px] overflow-y-auto">
+            <div className="lg:col-span-3 border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800 max-h-[600px] overflow-y-auto">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 Preview
               </h3>

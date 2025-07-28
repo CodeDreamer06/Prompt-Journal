@@ -119,6 +119,20 @@ body {
   margin: 0.25em 0;
 }
 
+/* Horizontal rule styling for separators */
+.prose hr {
+  border: none;
+  height: 2px;
+  background: linear-gradient(to right, transparent, rgb(107 114 128), transparent);
+  margin: 2em 0;
+  opacity: 0.6;
+}
+
+.dark .prose hr {
+  background: linear-gradient(to right, transparent, rgb(156 163 175), transparent);
+  opacity: 0.8;
+}
+
 @media (prefers-color-scheme: dark) {
   .prose code {
     background-color: rgb(55 65 81);
@@ -132,5 +146,10 @@ body {
   .prose blockquote {
     border-left-color: rgb(75 85 99);
     color: rgb(156 163 175);
+  }
+  
+  .prose hr {
+    background: linear-gradient(to right, transparent, rgb(156 163 175), transparent);
+    opacity: 0.8;
   }
 }
