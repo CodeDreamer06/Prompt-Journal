@@ -6,6 +6,7 @@ import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/pris
 import { Copy, User, Bot } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { parseConversation } from '@/lib/markdown';
+import { useTheme } from 'next-themes';
 
 interface ChatViewerProps {
   content: string;
@@ -13,18 +14,12 @@ interface ChatViewerProps {
 }
 
 export default function ChatViewer({ content, className = '' }: ChatViewerProps) {
-  const [isDark, setIsDark] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    setIsDark(isDarkMode);
-    
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleChange = (e: MediaQueryListEvent) => setIsDark(e.matches);
-    mediaQuery.addEventListener('change', handleChange);
-    
-    return () => mediaQuery.removeEventListener('change', handleChange);
+    setMounted(true);
   }, []);
 
   const messages = parseConversation(content);
@@ -88,7 +83,7 @@ export default function ChatViewer({ content, className = '' }: ChatViewerProps)
                   
                   return !isInline ? (
                     <SyntaxHighlighter
-                      style={isDark ? oneDark : oneLight}
+                      style={mounted && resolvedTheme === 'dark' ? oneDark : oneLight}
                       language={match[1]}
                       PreTag="div"
                       {...props}
