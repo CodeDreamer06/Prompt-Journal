@@ -122,15 +122,15 @@ body {
 /* Horizontal rule styling for separators */
 .prose hr {
   border: none;
-  height: 2px;
-  background: linear-gradient(to right, transparent, rgb(107 114 128), transparent);
+  height: 1px;
+  background-color: rgb(229 231 235);
   margin: 2em 0;
-  opacity: 0.6;
+  opacity: 0.3;
 }
 
 .dark .prose hr {
-  background: linear-gradient(to right, transparent, rgb(156 163 175), transparent);
-  opacity: 0.8;
+  background-color: rgb(75 85 99);
+  opacity: 0.4;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -149,7 +149,7 @@ body {
   }
   
   .prose hr {
-    background: linear-gradient(to right, transparent, rgb(156 163 175), transparent);
-    opacity: 0.8;
+    background-color: rgb(75 85 99);
+    opacity: 0.4;
   }
 }

@@ -102,7 +102,7 @@ export default function ChatViewer({ content, className = '' }: ChatViewerProps)
                   );
                 },
                 hr: () => (
-                  <hr className="my-6 border-none h-0.5 bg-gradient-to-r from-transparent via-gray-400 dark:via-gray-500 to-transparent opacity-60" />
+                  <hr className="my-6 border-none h-px bg-gray-200 dark:bg-gray-700 opacity-40" />
                 ),
               }}
             >

@@ -10,20 +10,11 @@ export default function ThemeToggle() {
   useEffect(() => {
     setMounted(true);
     
-    // Check if user has a saved preference
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      const isDarkSaved = savedTheme === 'dark';
-      setIsDark(isDarkSaved);
-      document.documentElement.classList.toggle('dark', isDarkSaved);
-    } else {
-      // Use system preference
-      const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setIsDark(isDarkMode);
-      document.documentElement.classList.toggle('dark', isDarkMode);
-    }
+    // Get current theme state from HTML element
+    const isDarkCurrent = document.documentElement.classList.contains('dark');
+    setIsDark(isDarkCurrent);
 
-    // Listen for system theme changes
+    // Listen for system theme changes only if no saved preference
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = (e: MediaQueryListEvent) => {
       if (!localStorage.getItem('theme')) {
