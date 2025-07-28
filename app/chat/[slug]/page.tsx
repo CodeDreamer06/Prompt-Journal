@@ -37,44 +37,43 @@ export default function ChatPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to Home
-            </Link>
-            
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => {
-                  if (navigator.share) {
-                    navigator.share({
-                      title: chat.title,
-                      text: chat.excerpt || '',
-                      url: window.location.href,
-                    });
-                  } else {
-                    navigator.clipboard.writeText(window.location.href);
-                  }
-                }}
-                className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
-                title="Share"
-              >
-                <Share2 className="w-4 h-4" />
-              </button>
-              <ThemeToggle />
-            </div>
-          </div>
+      {/* Floating Back Button */}
+      <div className="fixed top-4 left-4 z-50">
+        <Link
+          href="/"
+          className="flex items-center gap-2 px-3 py-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors shadow-lg"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </Link>
+      </div>
+
+      {/* Floating Controls */}
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+        <button
+          onClick={() => {
+            if (navigator.share) {
+              navigator.share({
+                title: chat.title,
+                text: chat.excerpt || '',
+                url: window.location.href,
+              });
+            } else {
+              navigator.clipboard.writeText(window.location.href);
+            }
+          }}
+          className="p-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors shadow-lg"
+          title="Share"
+        >
+          <Share2 className="w-4 h-4" />
+        </button>
+        <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
+          <ThemeToggle />
         </div>
-      </header>
+      </div>
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Chat Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
