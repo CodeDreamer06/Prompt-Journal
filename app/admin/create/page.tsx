@@ -24,6 +24,7 @@ export default function CreateChatPage() {
     try {
       const chatData = {
         ...data,
+        pageType: 'conversation' as const,
         isUnlisted: false,
         views: 0,
         readingTime: 1,
