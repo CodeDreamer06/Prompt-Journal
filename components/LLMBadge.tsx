@@ -33,7 +33,7 @@ export default function LLMBadge({ llm, size = 'md' }: LLMBadgeProps) {
         alt={`${config.name} logo`}
         width={logoSizes[size]}
         height={logoSizes[size]}
-        className="flex-shrink-0"
+        className="flex-shrink-0 rounded-full"
       />
       {config.name}
     </span>
