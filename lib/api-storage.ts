@@ -200,7 +200,7 @@ export async function migrateLocalStorageChats(): Promise<{ success: boolean; me
 }
 
 // Fallback functions for backward compatibility
-export function getChatById(id: string): Chat | null {
+export function getChatById(): Chat | null {
   // This will be replaced with API call in components
   console.warn('getChatById should use loadAllChats() instead');
   return null;
@@ -218,7 +218,7 @@ export function exportChats(): string {
   return '[]';
 }
 
-export function importChats(jsonData: string): boolean {
+export function importChats(): boolean {
   // This will be handled by the admin panel
   console.warn('importChats should be handled by admin panel');
   return false;

@@ -18,7 +18,7 @@ export default function EditChatPage({ params }: EditChatPageProps) {
   const [chat, setChat] = useState<Chat | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [chatId, setChatId] = useState<string>('');
+  const [, setChatId] = useState<string>('');
   const router = useRouter();
 
   useEffect(() => {

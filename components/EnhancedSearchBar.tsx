@@ -172,7 +172,7 @@ export default function EnhancedSearchBar({ chats, onFilter, className = '' }: E
         <div className="flex flex-wrap gap-2 text-sm">
           {filters.query && (
             <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">
-              Query: "{filters.query}"
+              Query: &quot;{filters.query}&quot;
             </span>
           )}
           {filters.llm && (

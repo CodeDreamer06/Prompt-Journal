@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { LogOut, Home, Plus, Settings } from 'lucide-react';
+import { LogOut, Home, Plus } from 'lucide-react';
 import { checkAdminAuth, clearAdminAuth } from '@/lib/auth';
 import ThemeToggle from '@/components/ThemeToggle';
 

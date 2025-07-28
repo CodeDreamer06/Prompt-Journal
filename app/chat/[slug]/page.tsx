@@ -50,7 +50,7 @@ export default function ChatPage() {
             Chat Not Found
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
-            This conversation doesn't exist or hasn't been published yet.
+            This conversation doesn&apos;t exist or hasn&apos;t been published yet.
           </p>
           <Link
             href="/"
