@@ -20,21 +20,35 @@ export async function GET() {
 // POST /api/chats - Create new chat (admin only)
 export async function POST(request: NextRequest) {
   try {
-    const { chat, adminPassword } = await request.json();
+    console.log('POST /api/chats called');
+    const body = await request.json();
+    console.log('Request body:', body);
+    
+    const { chat, adminPassword } = body;
     
     // Verify admin password
+    console.log('Checking password...');
     if (adminPassword !== process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
+      console.log('Password mismatch');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
+    console.log('Getting existing chats from KV...');
     const chats = await kv.get<Chat[]>(CHATS_KEY) || [];
+    console.log('Existing chats count:', chats.length);
+    
     chats.push(chat);
+    console.log('Saving to KV...');
     
     await kv.set(CHATS_KEY, chats);
+    console.log('Saved successfully');
     
     return NextResponse.json({ success: true, chat });
   } catch (error) {
     console.error('Error creating chat:', error);
-    return NextResponse.json({ error: 'Failed to create chat' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to create chat', 
+      details: error instanceof Error ? error.message : 'Unknown error' 
+    }, { status: 500 });
   }
 }
