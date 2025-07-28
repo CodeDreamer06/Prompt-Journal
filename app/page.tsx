@@ -24,7 +24,7 @@ export default function Home() {
     setFilteredChats(loadedChats);
     
     // Extract all unique tags
-    const tags = Array.from(new Set(loadedChats.flatMap(chat => chat.tags)));
+    const tags = Array.from(new Set(loadedChats.flatMap((chat: Chat) => chat.tags)));
     setAvailableTags(tags);
   }, []);
 
@@ -33,12 +33,12 @@ export default function Home() {
 
     // Filter by LLM
     if (llm) {
-      filtered = filtered.filter(chat => chat.llm === llm);
+      filtered = filtered.filter((chat: Chat) => chat.llm === llm);
     }
 
     // Filter by tags
     if (tags.length > 0) {
-      filtered = filtered.filter(chat => 
+      filtered = filtered.filter((chat: Chat) => 
         tags.every(tag => chat.tags.includes(tag))
       );
     }
