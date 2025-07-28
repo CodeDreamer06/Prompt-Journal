@@ -34,7 +34,21 @@ export function loadChats(): Chat[] {
   
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
+    const chats = stored ? JSON.parse(stored) : [];
+    
+    // Ensure all chats have required properties
+    return chats.map((chat: any) => ({
+      id: chat.id || '',
+      slug: chat.slug || '',
+      title: chat.title || 'Untitled',
+      content: chat.content || '',
+      llm: chat.llm || 'custom',
+      tags: Array.isArray(chat.tags) ? chat.tags : [],
+      createdAt: chat.createdAt || new Date().toISOString(),
+      updatedAt: chat.updatedAt || new Date().toISOString(),
+      isPublished: Boolean(chat.isPublished),
+      excerpt: chat.excerpt || ''
+    }));
   } catch {
     return [];
   }
