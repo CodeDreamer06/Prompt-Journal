@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { Search, Plus, Settings } from 'lucide-react';
 import { Chat } from '@/lib/types';
-import { loadChats } from '@/lib/storage';
+import { loadPublicChats } from '@/lib/api-storage';
 import LLMBadge from '@/components/LLMBadge';
 import SearchBar from '@/components/SearchBar';
 import ThemeToggle from '@/components/ThemeToggle';
@@ -19,13 +19,18 @@ export default function Home() {
 
   useEffect(() => {
     setMounted(true);
-    const loadedChats = loadChats().filter(chat => chat.isPublished);
-    setChats(loadedChats);
-    setFilteredChats(loadedChats);
     
-    // Extract all unique tags
-    const tags = Array.from(new Set(loadedChats.flatMap((chat: Chat) => chat.tags)));
-    setAvailableTags(tags);
+    const loadChatsData = async () => {
+      const loadedChats = await loadPublicChats();
+      setChats(loadedChats);
+      setFilteredChats(loadedChats);
+      
+      // Extract all unique tags
+      const tags = Array.from(new Set(loadedChats.flatMap((chat: Chat) => chat.tags)));
+      setAvailableTags(tags);
+    };
+    
+    loadChatsData();
   }, []);
 
   const handleSearch = (query: string, llm?: string, tags: string[] = []) => {

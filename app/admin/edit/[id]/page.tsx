@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { notFound } from 'next/navigation';
-import { getChatById, updateChat } from '@/lib/storage';
+import { loadAllChats, updateChat } from '@/lib/api-storage';
 import { LLMType, Chat } from '@/lib/types';
 import AdminLayout from '../../components/AdminLayout';
 import ChatEditor from '../../components/ChatEditor';
@@ -26,7 +26,9 @@ export default function EditChatPage({ params }: EditChatPageProps) {
       const { id } = await params;
       setChatId(id);
       setMounted(true);
-      const loadedChat = getChatById(id);
+      
+      const allChats = await loadAllChats();
+      const loadedChat = allChats.find(chat => chat.id === id);
       if (!loadedChat) {
         notFound();
       }
@@ -49,8 +51,12 @@ export default function EditChatPage({ params }: EditChatPageProps) {
     setIsLoading(true);
     
     try {
-      updateChat(chat.id, data);
-      router.push('/admin');
+      const updatedChat = await updateChat(chat.id, data);
+      if (updatedChat) {
+        router.push('/admin');
+      } else {
+        alert('Failed to update chat. Please try again.');
+      }
     } catch (error) {
       console.error('Failed to update chat:', error);
       alert('Failed to update chat. Please try again.');
