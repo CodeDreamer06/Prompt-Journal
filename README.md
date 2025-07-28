@@ -445,7 +445,7 @@ vercel env add NEXT_PUBLIC_ADMIN_PASSWORD
    - Environment variables are auto-added
 
 3. **Verify Connection**:
-   - Visit `/api/test-kv` on your deployed site
+   - Visit `/api/test-kv` on https://chatcraft.org
    - Should return `"success": true`
 
 ### 🌍 Alternative Deployments
@@ -570,7 +570,7 @@ For new features, please describe:
 
 ### 🔗 Useful Links
 
-- **Live Demo**: [Your deployed site]
+- **Live Demo**: [https://prompt-journal-nine.vercel.app/](https://prompt-journal-nine.vercel.app/)
 - **GitHub Repository**: [https://github.com/CodeDreamer06/Prompt-Journal](https://github.com/CodeDreamer06/Prompt-Journal)
 - **Vercel Documentation**: [https://vercel.com/docs](https://vercel.com/docs)
 - **Next.js Documentation**: [https://nextjs.org/docs](https://nextjs.org/docs)
