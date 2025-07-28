@@ -1,20 +1,28 @@
 import { NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
+import { createClient } from 'redis';
 
 export async function GET() {
   try {
-    console.log('Testing KV connection...');
+    console.log('Testing Redis connection...');
     
-    // Test basic KV operations
-    await kv.set('test-key', 'test-value');
-    const value = await kv.get('test-key');
-    await kv.del('test-key');
+    const redis = createClient({
+      url: process.env.REDIS_URL
+    });
     
-    console.log('KV test successful, value:', value);
+    await redis.connect();
+    
+    // Test basic Redis operations
+    await redis.set('test-key', 'test-value');
+    const value = await redis.get('test-key');
+    await redis.del('test-key');
+    
+    await redis.disconnect();
+    
+    console.log('Redis test successful, value:', value);
     
     return NextResponse.json({ 
       success: true, 
-      message: 'KV connection working',
+      message: 'Redis connection working',
       testValue: value,
       env: {
         hasRedisUrl: !!process.env.REDIS_URL,
@@ -22,7 +30,7 @@ export async function GET() {
       }
     });
   } catch (error) {
-    console.error('KV test failed:', error);
+    console.error('Redis test failed:', error);
     return NextResponse.json({ 
       success: false, 
       error: error instanceof Error ? error.message : 'Unknown error',

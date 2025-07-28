@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
+import { createClient } from 'redis';
 import { Chat } from '@/lib/types';
 
 const CHATS_KEY = 'prompt-journal:chats';
+
+const redis = createClient({
+  url: process.env.REDIS_URL
+});
 
 // POST /api/chats/migrate - Migrate localStorage chats to KV
 export async function POST(request: NextRequest) {
@@ -19,8 +23,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid chats data' }, { status: 400 });
     }
     
-    // Get existing chats from KV
-    const existingChats = await kv.get<Chat[]>(CHATS_KEY) || [];
+    if (!redis.isOpen) {
+      await redis.connect();
+    }
+    
+    // Get existing chats from Redis
+    const existingChatsData = await redis.get(CHATS_KEY);
+    const existingChats: Chat[] = existingChatsData ? JSON.parse(existingChatsData) : [];
     
     // Merge chats, avoiding duplicates
     const mergedChats = [...existingChats];
@@ -34,7 +43,7 @@ export async function POST(request: NextRequest) {
     });
     
     // Save merged chats
-    await kv.set(CHATS_KEY, mergedChats);
+    await redis.set(CHATS_KEY, JSON.stringify(mergedChats));
     
     return NextResponse.json({ 
       success: true, 

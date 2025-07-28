@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
+import { createClient } from 'redis';
 import { Chat } from '@/lib/types';
 
 const CHATS_KEY = 'prompt-journal:chats';
+
+const redis = createClient({
+  url: process.env.REDIS_URL
+});
 
 // GET /api/chats/admin - Get all chats (published + drafts) for admin
 export async function GET(request: NextRequest) {
@@ -14,7 +18,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const chats = await kv.get<Chat[]>(CHATS_KEY) || [];
+    if (!redis.isOpen) {
+      await redis.connect();
+    }
+    
+    const chatsData = await redis.get(CHATS_KEY);
+    const chats: Chat[] = chatsData ? JSON.parse(chatsData) : [];
+    
     return NextResponse.json(chats);
   } catch (error) {
     console.error('Error fetching admin chats:', error);
@@ -32,7 +42,12 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const chats = await kv.get<Chat[]>(CHATS_KEY) || [];
+    if (!redis.isOpen) {
+      await redis.connect();
+    }
+    
+    const chatsData = await redis.get(CHATS_KEY);
+    const chats: Chat[] = chatsData ? JSON.parse(chatsData) : [];
     const index = chats.findIndex(chat => chat.id === chatId);
     
     if (index === -1) {
@@ -40,7 +55,7 @@ export async function PUT(request: NextRequest) {
     }
     
     chats[index] = { ...chats[index], ...updates, updatedAt: new Date().toISOString() };
-    await kv.set(CHATS_KEY, chats);
+    await redis.set(CHATS_KEY, JSON.stringify(chats));
     
     return NextResponse.json({ success: true, chat: chats[index] });
   } catch (error) {
@@ -59,14 +74,19 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const chats = await kv.get<Chat[]>(CHATS_KEY) || [];
+    if (!redis.isOpen) {
+      await redis.connect();
+    }
+    
+    const chatsData = await redis.get(CHATS_KEY);
+    const chats: Chat[] = chatsData ? JSON.parse(chatsData) : [];
     const filteredChats = chats.filter(chat => chat.id !== chatId);
     
     if (filteredChats.length === chats.length) {
       return NextResponse.json({ error: 'Chat not found' }, { status: 404 });
     }
     
-    await kv.set(CHATS_KEY, filteredChats);
+    await redis.set(CHATS_KEY, JSON.stringify(filteredChats));
     
     return NextResponse.json({ success: true });
   } catch (error) {

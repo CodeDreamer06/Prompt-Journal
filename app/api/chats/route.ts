@@ -1,13 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
+import { createClient } from 'redis';
 import { Chat } from '@/lib/types';
 
 const CHATS_KEY = 'prompt-journal:chats';
 
+const redis = createClient({
+  url: process.env.REDIS_URL
+});
+
 // GET /api/chats - Get all published chats
 export async function GET() {
   try {
-    const chats = await kv.get<Chat[]>(CHATS_KEY) || [];
+    if (!redis.isOpen) {
+      await redis.connect();
+    }
+    
+    const chatsData = await redis.get(CHATS_KEY);
+    const chats: Chat[] = chatsData ? JSON.parse(chatsData) : [];
+    
     // Only return published chats for public API
     const publishedChats = chats.filter(chat => chat.isPublished);
     return NextResponse.json(publishedChats);
@@ -20,35 +30,30 @@ export async function GET() {
 // POST /api/chats - Create new chat (admin only)
 export async function POST(request: NextRequest) {
   try {
-    console.log('POST /api/chats called');
-    const body = await request.json();
-    console.log('Request body:', body);
-    
-    const { chat, adminPassword } = body;
+    const { chat, adminPassword } = await request.json();
     
     // Verify admin password
-    console.log('Checking password...');
     if (adminPassword !== process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
-      console.log('Password mismatch');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    console.log('Getting existing chats from KV...');
-    const chats = await kv.get<Chat[]>(CHATS_KEY) || [];
-    console.log('Existing chats count:', chats.length);
+    if (!redis.isOpen) {
+      await redis.connect();
+    }
     
+    // Get existing chats
+    const chatsData = await redis.get(CHATS_KEY);
+    const chats: Chat[] = chatsData ? JSON.parse(chatsData) : [];
+    
+    // Add new chat
     chats.push(chat);
-    console.log('Saving to KV...');
     
-    await kv.set(CHATS_KEY, chats);
-    console.log('Saved successfully');
+    // Save back to Redis
+    await redis.set(CHATS_KEY, JSON.stringify(chats));
     
     return NextResponse.json({ success: true, chat });
   } catch (error) {
     console.error('Error creating chat:', error);
-    return NextResponse.json({ 
-      error: 'Failed to create chat', 
-      details: error instanceof Error ? error.message : 'Unknown error' 
-    }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to create chat' }, { status: 500 });
   }
 }
