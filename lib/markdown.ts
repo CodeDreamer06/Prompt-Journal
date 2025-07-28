@@ -1,17 +1,29 @@
 export function parseConversation(content: string) {
-  // Split by the separator pattern
-  const parts = content.split(/\n\n---\n\n/);
   const messages: Array<{ type: 'user' | 'assistant'; content: string }> = [];
+  
+  // Split by message headers, but keep the headers for identification
+  const parts = content.split(/(?=### (?:🧑‍💻 )?(?:User|🤖 Assistant))/);
   
   parts.forEach(part => {
     const trimmed = part.trim();
+    if (!trimmed) return;
     
     if (trimmed.startsWith('### 🧑‍💻 User') || trimmed.startsWith('### User')) {
-      const content = trimmed.replace(/^### (?:🧑‍💻 )?User\s*\n\n/, '');
-      messages.push({ type: 'user', content });
+      // Extract content after the header, preserving everything until next message
+      const content = trimmed.replace(/^### (?:🧑‍💻 )?User\s*\n\n?/, '');
+      // Remove trailing separator if it exists
+      const cleanContent = content.replace(/\n\n---\s*$/, '');
+      if (cleanContent.trim()) {
+        messages.push({ type: 'user', content: cleanContent });
+      }
     } else if (trimmed.startsWith('### 🤖 Assistant') || trimmed.startsWith('### Assistant')) {
-      const content = trimmed.replace(/^### (?:🤖 )?Assistant\s*\n\n/, '');
-      messages.push({ type: 'assistant', content });
+      // Extract content after the header, preserving everything until next message
+      const content = trimmed.replace(/^### (?:🤖 )?Assistant\s*\n\n?/, '');
+      // Remove trailing separator if it exists
+      const cleanContent = content.replace(/\n\n---\s*$/, '');
+      if (cleanContent.trim()) {
+        messages.push({ type: 'assistant', content: cleanContent });
+      }
     }
   });
   
