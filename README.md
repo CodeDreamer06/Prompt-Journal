@@ -4,6 +4,8 @@
 
 Transform your AI conversations into a professional blog that others can explore, search, and learn from. Built with Next.js 15, Tailwind CSS 4, TypeScript, and Vercel KV for global accessibility.
 
+🌐 **Live Demo**: [https://prompt-journal-nine.vercel.app/](https://prompt-journal-nine.vercel.app/)
+
 ![Prompt Journal Preview](https://via.placeholder.com/800x400/0a0a0a/ffffff?text=Prompt+Journal+Preview)
 
 ---
