@@ -1,4 +1,4 @@
-export type LLMType = 'chatgpt' | 'claude' | 'gemini' | 'gpt4' | 'perplexity' | 'llama' | 'mistral' | 'custom';
+export type LLMType = 'chatgpt' | 'claude' | 'gemini' | 'gpt4' | 'perplexity' | 'llama' | 'mistral' | 'custom' | 'grok' | 'deepseek' | 'qwen' | 'gpt-reasoning';
 
 export interface Chat {
   id: string;

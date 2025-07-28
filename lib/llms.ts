@@ -29,33 +29,19 @@ export const LLM_CONFIGS: Record<LLMType, LLMConfig> = {
     textColor: 'text-emerald-600 dark:text-emerald-400',
     bgColor: 'bg-emerald-50 dark:bg-emerald-950'
   },
+  'gpt-reasoning': {
+    name: 'o1',
+    logo: '/logos/gpt-reasoning.png',
+    color: 'border-green-500',
+    textColor: 'text-green-600 dark:text-green-400',
+    bgColor: 'bg-green-50 dark:bg-green-950'
+  },
   perplexity: {
     name: 'Perplexity',
     logo: '/logos/perplexity.png',
     color: 'border-cyan-500',
     textColor: 'text-cyan-600 dark:text-cyan-400',
     bgColor: 'bg-cyan-50 dark:bg-cyan-950'
-  },
-  llama: {
-    name: 'Llama',
-    logo: '/logos/llama.svg',
-    color: 'border-red-500',
-    textColor: 'text-red-600 dark:text-red-400',
-    bgColor: 'bg-red-50 dark:bg-red-950'
-  },
-  mistral: {
-    name: 'Mistral',
-    logo: '/logos/mistral.svg',
-    color: 'border-indigo-500',
-    textColor: 'text-indigo-600 dark:text-indigo-400',
-    bgColor: 'bg-indigo-50 dark:bg-indigo-950'
-  },
-  custom: {
-    name: 'Custom',
-    logo: '/logos/custom.svg',
-    color: 'border-purple-500',
-    textColor: 'text-purple-600 dark:text-purple-400',
-    bgColor: 'bg-purple-50 dark:bg-purple-950'
   },
   grok: {
     name: 'Grok',
@@ -78,11 +64,25 @@ export const LLM_CONFIGS: Record<LLMType, LLMConfig> = {
     textColor: 'text-yellow-600 dark:text-yellow-400',
     bgColor: 'bg-yellow-50 dark:bg-yellow-950'
   },
-  'gpt-reasoning': {
-    name: 'o1',
-    logo: '/logos/gpt-reasoning.png',
-    color: 'border-green-500',
-    textColor: 'text-green-600 dark:text-green-400',
-    bgColor: 'bg-green-50 dark:bg-green-950'
+  llama: {
+    name: 'Llama',
+    logo: '/logos/qwen.png', // Using qwen logo as placeholder since llama.svg was deleted
+    color: 'border-red-500',
+    textColor: 'text-red-600 dark:text-red-400',
+    bgColor: 'bg-red-50 dark:bg-red-950'
+  },
+  mistral: {
+    name: 'Mistral',
+    logo: '/logos/qwen.png', // Using qwen logo as placeholder since mistral.svg was deleted
+    color: 'border-indigo-500',
+    textColor: 'text-indigo-600 dark:text-indigo-400',
+    bgColor: 'bg-indigo-50 dark:bg-indigo-950'
+  },
+  custom: {
+    name: 'Custom',
+    logo: '/logos/gpt.png', // Using gpt logo as placeholder since custom.svg was deleted
+    color: 'border-purple-500',
+    textColor: 'text-purple-600 dark:text-purple-400',
+    bgColor: 'bg-purple-50 dark:bg-purple-950'
   }
 };
