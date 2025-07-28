@@ -68,7 +68,8 @@ export default function MarkdownRenderer({
                   )}
                 </button>
                 <SyntaxHighlighter
-                  style={mounted && resolvedTheme === 'dark' ? oneDark : oneLight}
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  style={(mounted && resolvedTheme === 'dark' ? oneDark : oneLight) as any}
                   language={match[1]}
                   PreTag="div"
                   showLineNumbers={true}
@@ -77,7 +78,6 @@ export default function MarkdownRenderer({
                     borderRadius: '0.5rem',
                     border: 'none',
                   }}
-                  {...props}
                 >
                   {codeString}
                 </SyntaxHighlighter>
