@@ -30,7 +30,7 @@ interface ChatEditorProps {
 export default function ChatEditor({ initialData, onSave, onCancel, isLoading }: ChatEditorProps) {
   const [title, setTitle] = useState(initialData?.title || '');
   const [content, setContent] = useState(initialData?.content || '');
-  const [llm, setLlm] = useState<LLMType>(initialData?.llm || 'chatgpt');
+  const [llm, setLlm] = useState<LLMType>(initialData?.llm || 'gpt-4o');
   const [tags, setTags] = useState(initialData?.tags.join(', ') || '');
   const [isPublished, setIsPublished] = useState(initialData?.isPublished || false);
   const [showPreview, setShowPreview] = useState(false);
