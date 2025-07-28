@@ -74,16 +74,6 @@ export default function ChatPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Floating Back Button */}
-      <div className="fixed top-4 left-4 z-50">
-        <Link
-          href="/"
-          className="flex items-center gap-2 px-3 py-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors shadow-lg"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back
-        </Link>
-      </div>
 
       {/* Floating Controls */}
       <div className="fixed top-4 right-4 z-50 flex items-center gap-2">

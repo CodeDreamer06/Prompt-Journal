@@ -1,5 +1,6 @@
 import { Chat } from './types';
 import { nanoid } from 'nanoid';
+import { calculateReadingTime } from './reading-time';
 
 const STORAGE_KEY = 'prompt-journal-chats';
 
@@ -47,7 +48,12 @@ export function loadChats(): Chat[] {
       createdAt: chat.createdAt || new Date().toISOString(),
       updatedAt: chat.updatedAt || new Date().toISOString(),
       isPublished: Boolean(chat.isPublished),
-      excerpt: chat.excerpt || ''
+      isUnlisted: Boolean(chat.isUnlisted),
+      excerpt: chat.excerpt || '',
+      views: Number(chat.views) || 0,
+      readingTime: Number(chat.readingTime) || calculateReadingTime(chat.content || ''),
+      isDraft: Boolean(chat.isDraft),
+      lastSaved: chat.lastSaved
     }));
   } catch {
     return [];
@@ -63,7 +69,12 @@ export function saveChat(chat: Omit<Chat, 'id' | 'createdAt' | 'updatedAt'>): Ch
     id: nanoid(),
     createdAt: now,
     updatedAt: now,
-    excerpt: generateExcerpt(chat.content)
+    excerpt: generateExcerpt(chat.content),
+    views: 0,
+    readingTime: calculateReadingTime(chat.content),
+    isUnlisted: chat.isUnlisted || false,
+    isDraft: chat.isDraft || false,
+    lastSaved: now
   };
   
   chats.push(newChat);
@@ -81,7 +92,9 @@ export function updateChat(id: string, updates: Partial<Chat>): Chat | null {
     ...chats[index],
     ...updates,
     updatedAt: new Date().toISOString(),
-    excerpt: updates.content ? generateExcerpt(updates.content) : chats[index].excerpt
+    excerpt: updates.content ? generateExcerpt(updates.content) : chats[index].excerpt,
+    readingTime: updates.content ? calculateReadingTime(updates.content) : chats[index].readingTime,
+    lastSaved: new Date().toISOString()
   };
   
   chats[index] = updatedChat;
@@ -99,6 +112,15 @@ export function deleteChat(id: string): boolean {
   return true;
 }
 
+export function deleteChats(ids: string[]): number {
+  const chats = loadChats();
+  const filtered = chats.filter(chat => !ids.includes(chat.id));
+  const deletedCount = chats.length - filtered.length;
+  
+  saveChats(filtered);
+  return deletedCount;
+}
+
 export function getChatBySlug(slug: string): Chat | null {
   const chats = loadChats();
   return chats.find(chat => chat.slug === slug) || null;
@@ -109,9 +131,19 @@ export function getChatById(id: string): Chat | null {
   return chats.find(chat => chat.id === id) || null;
 }
 
-export function exportChats(): string {
+export function incrementViews(slug: string): void {
   const chats = loadChats();
-  return JSON.stringify(chats, null, 2);
+  const chat = chats.find(c => c.slug === slug);
+  if (chat) {
+    chat.views = (chat.views || 0) + 1;
+    saveChats(chats);
+  }
+}
+
+export function exportChats(ids?: string[]): string {
+  const chats = loadChats();
+  const chatsToExport = ids ? chats.filter(chat => ids.includes(chat.id)) : chats;
+  return JSON.stringify(chatsToExport, null, 2);
 }
 
 export function importChats(jsonData: string): boolean {
@@ -139,4 +171,39 @@ export function importChats(jsonData: string): boolean {
   } catch {
     return false;
   }
+}
+
+// Auto-save functionality
+export function saveDraft(id: string, content: Partial<Chat>): void {
+  const chats = loadChats();
+  const index = chats.findIndex(chat => chat.id === id);
+  
+  if (index !== -1) {
+    chats[index] = {
+      ...chats[index],
+      ...content,
+      isDraft: true,
+      lastSaved: new Date().toISOString()
+    };
+    saveChats(chats);
+  }
+}
+
+// Bulk operations
+export function bulkUpdateChats(ids: string[], updates: Partial<Chat>): number {
+  const chats = loadChats();
+  let updatedCount = 0;
+  
+  chats.forEach(chat => {
+    if (ids.includes(chat.id)) {
+      Object.assign(chat, updates, {
+        updatedAt: new Date().toISOString(),
+        lastSaved: new Date().toISOString()
+      });
+      updatedCount++;
+    }
+  });
+  
+  saveChats(chats);
+  return updatedCount;
 }

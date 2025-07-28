@@ -29,6 +29,10 @@ export async function GET(
       return NextResponse.json({ error: 'Chat not found' }, { status: 404 });
     }
     
+    // Increment view count
+    chat.views = (chat.views || 0) + 1;
+    await redis.set(CHATS_KEY, JSON.stringify(chats));
+    
     return NextResponse.json(chat);
   } catch (error) {
     console.error('Error fetching chat:', error);

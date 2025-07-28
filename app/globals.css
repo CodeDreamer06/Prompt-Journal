@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "katex/dist/katex.min.css";
 
 :root {
   --background: #ffffff;
@@ -66,12 +67,49 @@ body {
   max-width: none;
 }
 
-.prose h1,
-.prose h2,
-.prose h3,
-.prose h4,
-.prose h5,
+.prose h1 {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-weight: 700;
+}
+
+.prose h2 {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+}
+
+.prose h3 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+}
+
+.prose h4 {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+}
+
+.prose h5 {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+}
+
 .prose h6 {
+  font-size: 1rem;
+  line-height: 1.5rem;
   margin-top: 1.5em;
   margin-bottom: 0.5em;
   font-weight: 600;
@@ -109,14 +147,37 @@ body {
   font-style: italic;
 }
 
-.prose ul,
+.prose ul {
+  margin: 1em 0;
+  padding-left: 1.5rem;
+  list-style-type: disc;
+}
+
 .prose ol {
   margin: 1em 0;
   padding-left: 1.5rem;
+  list-style-type: decimal;
+}
+
+.prose ul ul {
+  list-style-type: circle;
+}
+
+.prose ul ul ul {
+  list-style-type: square;
 }
 
 .prose li {
   margin: 0.25em 0;
+  display: list-item;
+}
+
+.prose li::marker {
+  color: rgb(107 114 128);
+}
+
+.dark .prose li::marker {
+  color: rgb(156 163 175);
 }
 
 /* Horizontal rule styling for separators */
@@ -152,4 +213,73 @@ body {
     background-color: rgb(75 85 99);
     opacity: 0.4;
   }
+}
+
+/* KaTeX math rendering styles */
+.katex {
+  font-size: 1.1em;
+}
+
+.katex-display {
+  margin: 1em 0;
+  text-align: center;
+}
+
+.katex-display > .katex {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* Dark mode adjustments for KaTeX */
+.dark .katex {
+  color: rgb(229 231 235);
+}
+
+.dark .katex .mord {
+  color: rgb(229 231 235);
+}
+
+.dark .katex .mbin,
+.dark .katex .mrel {
+  color: rgb(156 163 175);
+}
+
+.dark .katex .mop {
+  color: rgb(147 197 253);
+}
+
+.dark .katex .mpunct {
+  color: rgb(156 163 175);
+}
+
+/* Enhanced code block styles */
+.prose pre {
+  padding: 0;
+  background-color: transparent;
+  border-radius: 0;
+  border: none;
+  margin: 0;
+}
+
+.prose pre code {
+  background-color: transparent;
+  padding: 1rem;
+  display: block;
+  border: none;
+}
+
+/* Line numbers styling */
+.prose .react-syntax-highlighter-line-number {
+  color: rgb(156 163 175) !important;
+  user-select: none;
+  min-width: 2.5em;
+  text-align: right;
+  padding-right: 1em;
+  border-right: 1px solid rgb(229 231 235);
+  margin-right: 1em;
+}
+
+.dark .prose .react-syntax-highlighter-line-number {
+  color: rgb(107 114 128) !important;
+  border-right-color: rgb(75 85 99);
 }
