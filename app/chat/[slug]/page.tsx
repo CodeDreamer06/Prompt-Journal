@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, notFound } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { ArrowLeft, Share2 } from 'lucide-react';
@@ -15,19 +15,51 @@ export default function ChatPage() {
   const params = useParams();
   const [chat, setChat] = useState<Chat | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     if (params.slug) {
       const loadedChat = getChatBySlug(params.slug as string);
       if (!loadedChat || !loadedChat.isPublished) {
-        notFound();
+        setNotFound(true);
+      } else {
+        setChat(loadedChat);
       }
-      setChat(loadedChat);
     }
   }, [params.slug]);
 
-  if (!mounted || !chat) {
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (notFound) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            Chat Not Found
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            This conversation doesn't exist or hasn't been published yet.
+          </p>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Home
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!chat) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
