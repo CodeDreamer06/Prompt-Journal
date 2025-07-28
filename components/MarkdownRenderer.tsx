@@ -39,8 +39,8 @@ export default function MarkdownRenderer({
   };
 
   const baseProseClasses = variant === 'page' 
-    ? 'prose prose-lg dark:prose-invert max-w-none prose-headings:font-semibold prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl prose-p:leading-relaxed prose-li:leading-relaxed'
-    : 'prose dark:prose-invert max-w-none';
+    ? 'prose prose-lg dark:prose-invert max-w-none prose-headings:font-semibold prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl prose-p:leading-relaxed prose-li:leading-relaxed prose-pre:p-0 prose-pre:m-0'
+    : 'prose dark:prose-invert max-w-none prose-pre:p-0 prose-pre:m-0';
 
   return (
     <div className={`${baseProseClasses} ${className}`}>
@@ -79,6 +79,7 @@ export default function MarkdownRenderer({
                       padding: '1rem',
                       borderRadius: '0.5rem',
                       border: 'none',
+                      background: 'transparent',
                       backgroundColor: mounted && resolvedTheme === 'dark' ? '#0d1117' : '#f6f8fa',
                       fontSize: '0.875rem',
                       lineHeight: '1.5',
