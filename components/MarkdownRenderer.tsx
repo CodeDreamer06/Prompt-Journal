@@ -80,7 +80,7 @@ export default function MarkdownRenderer({
                       borderRadius: '0.5rem',
                       border: 'none',
                       background: 'transparent',
-                      backgroundColor: mounted && resolvedTheme === 'dark' ? '#0d1117' : '#f6f8fa',
+                      backgroundColor: mounted && resolvedTheme === 'dark' ? '#1f2937' : '#f9fafb',
                       fontSize: '0.875rem',
                       lineHeight: '1.5',
                     }}
