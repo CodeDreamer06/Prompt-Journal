@@ -255,10 +255,14 @@ body {
 /* Enhanced code block styles */
 .prose pre {
   padding: 0;
-  background-color: transparent;
-  border-radius: 0;
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
   border: none;
   margin: 0;
+}
+
+.dark .prose pre {
+  background-color: #1f2937;
 }
 
 .prose pre code {
@@ -266,6 +270,16 @@ body {
   padding: 1rem;
   display: block;
   border: none;
+}
+
+/* Force syntax highlighter backgrounds */
+.prose .react-syntax-highlighter {
+  background: #f9fafb !important;
+  border-radius: 0.5rem;
+}
+
+.dark .prose .react-syntax-highlighter {
+  background: #1f2937 !important;
 }
 
 /* Line numbers styling */
@@ -290,42 +304,54 @@ body {
   margin-bottom: 1.5rem;
   border-collapse: collapse;
   width: 100%;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid rgba(209, 213, 219, 0.5);
+}
+
+.dark .prose table {
+  border-color: rgba(75, 85, 99, 0.5);
 }
 
 .prose table th,
 .prose table td {
-  border: 1px solid rgb(209 213 219);
+  border: none;
+  border-bottom: 1px solid rgba(209, 213, 219, 0.3);
   padding: 0.75rem 1rem;
   text-align: left;
 }
 
 .dark .prose table th,
 .dark .prose table td {
-  border-color: rgb(75 85 99);
+  border-bottom-color: rgba(75, 85, 99, 0.3);
 }
 
 .prose table th {
-  background-color: rgb(249 250 251);
+  background-color: rgba(249, 250, 251, 0.3);
   font-weight: 600;
   font-size: 0.875rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: rgb(107 114 128);
+  color: rgb(107, 114, 128);
 }
 
 .dark .prose table th {
-  background-color: rgb(31 41 55);
-  color: rgb(156 163 175);
+  background-color: rgba(31, 41, 55, 0.3);
+  color: rgb(209, 213, 217);
 }
 
 .prose table tbody tr:hover {
-  background-color: rgb(249 250 251);
+  background-color: rgba(249, 250, 251, 0.2);
 }
 
 .dark .prose table tbody tr:hover {
-  background-color: rgb(31 41 55);
+  background-color: rgba(31, 41, 55, 0.2);
 }
 
 .prose table tbody tr {
   transition: background-color 0.15s ease-in-out;
+}
+
+.prose table tbody tr:last-child td {
+  border-bottom: none;
 }

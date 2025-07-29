@@ -80,11 +80,16 @@ export default function MarkdownRenderer({
                       padding: '1rem',
                       borderRadius: '0.5rem',
                       border: 'none',
-                      background: mounted && resolvedTheme === 'dark' ? '#1f2937' : '#f9fafb',
-                      backgroundColor: mounted && resolvedTheme === 'dark' ? '#1f2937' : '#f9fafb',
+                      background: 'transparent',
+                      backgroundColor: 'transparent',
                       fontSize: '0.875rem',
                       lineHeight: '1.5',
-                      color: mounted && resolvedTheme === 'dark' ? '#e5e7eb' : '#374151',
+                    }}
+                    codeTagProps={{
+                      style: {
+                        background: 'transparent',
+                        backgroundColor: 'transparent',
+                      }
                     }}
                   >
                     {codeString}
@@ -102,33 +107,33 @@ export default function MarkdownRenderer({
           ),
           table: ({ children }) => (
             <div className="overflow-x-auto my-6">
-              <table className="min-w-full border-collapse border border-gray-300 dark:border-gray-600 rounded-lg">
+              <table className="min-w-full border-collapse border border-gray-200/50 dark:border-gray-700/50 rounded-lg overflow-hidden">
                 {children}
               </table>
             </div>
           ),
           thead: ({ children }) => (
-            <thead className="bg-gray-50 dark:bg-gray-800">
+            <thead className="bg-gray-50/30 dark:bg-gray-800/30">
               {children}
             </thead>
           ),
           tbody: ({ children }) => (
-            <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="bg-transparent divide-y divide-gray-200/30 dark:divide-gray-700/30">
               {children}
             </tbody>
           ),
           tr: ({ children }) => (
-            <tr className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+            <tr className="hover:bg-gray-50/20 dark:hover:bg-gray-800/20 transition-colors duration-150">
               {children}
             </tr>
           ),
           th: ({ children }) => (
-            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b border-gray-200 dark:border-gray-600">
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider border-b border-gray-200/30 dark:border-gray-700/30">
               {children}
             </th>
           ),
           td: ({ children }) => (
-            <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-600">
+            <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 border-b border-gray-200/20 dark:border-gray-700/20">
               {children}
             </td>
           ),
