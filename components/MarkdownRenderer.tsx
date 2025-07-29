@@ -128,7 +128,7 @@ export default function MarkdownRenderer({
             </tr>
           ),
           th: ({ children }) => (
-            <th className="px-4 py-3 text-left text-xs font-medium text-gray-800 dark:text-gray-100 uppercase tracking-wider border-b border-gray-200/30 dark:border-gray-700/30">
+            <th className="px-4 py-3 text-left text-xs font-medium text-white tracking-wider border-b border-gray-200/30 dark:border-gray-700/30">
               {children}
             </th>
           ),
