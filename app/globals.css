@@ -332,20 +332,20 @@ body {
   font-size: 0.875rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: rgb(107, 114, 128);
+  color: rgb(31, 41, 55);
 }
 
 .dark .prose table th {
   background-color: rgba(31, 41, 55, 0.3);
-  color: rgb(209, 213, 217);
+  color: rgb(243, 244, 246);
 }
 
 .prose table tbody tr:hover {
-  background-color: rgba(249, 250, 251, 0.2);
+  background-color: rgba(249, 250, 251, 0.1);
 }
 
 .dark .prose table tbody tr:hover {
-  background-color: rgba(31, 41, 55, 0.2);
+  background-color: rgba(31, 41, 55, 0.1);
 }
 
 .prose table tbody tr {
