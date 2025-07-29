@@ -7,6 +7,7 @@ import { Copy } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import remarkMath from 'remark-math';
+import remarkGfm from 'remark-gfm';
 import rehypeKatex from 'rehype-katex';
 
 interface MarkdownRendererProps {
@@ -39,13 +40,13 @@ export default function MarkdownRenderer({
   };
 
   const baseProseClasses = variant === 'page' 
-    ? 'prose prose-lg dark:prose-invert max-w-none prose-headings:font-semibold prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl prose-p:leading-relaxed prose-li:leading-relaxed prose-pre:p-0 prose-pre:m-0'
-    : 'prose dark:prose-invert max-w-none prose-pre:p-0 prose-pre:m-0';
+    ? 'prose prose-lg dark:prose-invert max-w-none prose-headings:font-semibold prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl prose-p:leading-relaxed prose-li:leading-relaxed prose-pre:p-0 prose-pre:m-0 prose-table:table-auto prose-th:border prose-th:border-gray-300 dark:prose-th:border-gray-600 prose-td:border prose-td:border-gray-300 dark:prose-td:border-gray-600'
+    : 'prose dark:prose-invert max-w-none prose-pre:p-0 prose-pre:m-0 prose-table:table-auto prose-th:border prose-th:border-gray-300 dark:prose-th:border-gray-600 prose-td:border prose-td:border-gray-300 dark:prose-td:border-gray-600';
 
   return (
     <div className={`${baseProseClasses} ${className}`}>
       <ReactMarkdown
-        remarkPlugins={[remarkMath]}
+        remarkPlugins={[remarkMath, remarkGfm]}
         rehypePlugins={[rehypeKatex]}
         components={{
           code({ className, children, ...props }) {
@@ -79,10 +80,11 @@ export default function MarkdownRenderer({
                       padding: '1rem',
                       borderRadius: '0.5rem',
                       border: 'none',
-                      background: 'transparent',
+                      background: mounted && resolvedTheme === 'dark' ? '#1f2937' : '#f9fafb',
                       backgroundColor: mounted && resolvedTheme === 'dark' ? '#1f2937' : '#f9fafb',
                       fontSize: '0.875rem',
                       lineHeight: '1.5',
+                      color: mounted && resolvedTheme === 'dark' ? '#e5e7eb' : '#374151',
                     }}
                   >
                     {codeString}
@@ -97,6 +99,38 @@ export default function MarkdownRenderer({
           },
           hr: () => (
             <hr className="my-6 border-none h-px bg-gray-200 dark:bg-gray-700 opacity-40" />
+          ),
+          table: ({ children }) => (
+            <div className="overflow-x-auto my-6">
+              <table className="min-w-full border-collapse border border-gray-300 dark:border-gray-600 rounded-lg">
+                {children}
+              </table>
+            </div>
+          ),
+          thead: ({ children }) => (
+            <thead className="bg-gray-50 dark:bg-gray-800">
+              {children}
+            </thead>
+          ),
+          tbody: ({ children }) => (
+            <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+              {children}
+            </tbody>
+          ),
+          tr: ({ children }) => (
+            <tr className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+              {children}
+            </tr>
+          ),
+          th: ({ children }) => (
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b border-gray-200 dark:border-gray-600">
+              {children}
+            </th>
+          ),
+          td: ({ children }) => (
+            <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-600">
+              {children}
+            </td>
           ),
         }}
       >

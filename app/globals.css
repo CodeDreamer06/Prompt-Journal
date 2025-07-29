@@ -283,3 +283,49 @@ body {
   color: rgb(107 114 128) !important;
   border-right-color: rgb(75 85 99);
 }
+
+/* Table styles for markdown */
+.prose table {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.prose table th,
+.prose table td {
+  border: 1px solid rgb(209 213 219);
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+.dark .prose table th,
+.dark .prose table td {
+  border-color: rgb(75 85 99);
+}
+
+.prose table th {
+  background-color: rgb(249 250 251);
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgb(107 114 128);
+}
+
+.dark .prose table th {
+  background-color: rgb(31 41 55);
+  color: rgb(156 163 175);
+}
+
+.prose table tbody tr:hover {
+  background-color: rgb(249 250 251);
+}
+
+.dark .prose table tbody tr:hover {
+  background-color: rgb(31 41 55);
+}
+
+.prose table tbody tr {
+  transition: background-color 0.15s ease-in-out;
+}
