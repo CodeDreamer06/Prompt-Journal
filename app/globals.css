@@ -323,7 +323,7 @@ body {
 
 .dark .prose table th,
 .dark .prose table td {
-  border-bottom-color: rgba(75, 85, 99, 0.3);
+  border-bottom-color: rgba(75, 85, 99, 0.15);
 }
 
 .prose table th {
