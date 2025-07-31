@@ -337,7 +337,7 @@ body {
 
 .dark .prose table th {
   background-color: rgba(31, 41, 55, 0.3);
-  color: rgb(243, 244, 246);
+  color: rgb(255, 255, 255);
 }
 
 .prose table tbody tr:hover {
