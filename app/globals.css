@@ -332,12 +332,12 @@ body {
   font-size: 0.875rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: rgb(31, 41, 55);
+  color: rgb(17, 24, 39);
 }
 
 .dark .prose table th {
   background-color: rgba(31, 41, 55, 0.3);
-  color: rgb(255, 255, 255);
+  color: rgb(255, 255, 255) !important;
 }
 
 .prose table tbody tr:hover {
