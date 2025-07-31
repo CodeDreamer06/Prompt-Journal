@@ -332,7 +332,7 @@ body {
   font-size: 0.875rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: rgb(17, 24, 39);
+  color: rgb(255, 255, 255);
 }
 
 .dark .prose table th {
