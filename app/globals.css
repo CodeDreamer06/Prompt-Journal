@@ -13,11 +13,9 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark:root {
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 body {
@@ -44,14 +42,12 @@ body {
   background: #94a3b8;
 }
 
-@media (prefers-color-scheme: dark) {
-  ::-webkit-scrollbar-thumb {
-    background: #475569;
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background: #64748b;
-  }
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
 }
 
 /* Line clamp utility */
@@ -127,12 +123,21 @@ body {
   font-size: 0.875em;
 }
 
+.dark .prose code {
+  background-color: rgb(55 65 81);
+  color: rgb(229 231 235);
+}
+
 .prose pre {
   background-color: rgb(243 244 246);
   padding: 1rem;
   border-radius: 0.5rem;
   overflow-x: auto;
   margin: 1em 0;
+}
+
+.dark .prose pre {
+  background-color: rgb(55 65 81);
 }
 
 .prose pre code {
@@ -145,6 +150,11 @@ body {
   padding-left: 1rem;
   margin: 1em 0;
   font-style: italic;
+}
+
+.dark .prose blockquote {
+  border-left-color: rgb(75 85 99);
+  color: rgb(156 163 175);
 }
 
 .prose ul {
@@ -192,27 +202,6 @@ body {
 .dark .prose hr {
   background-color: rgb(75 85 99);
   opacity: 0.4;
-}
-
-@media (prefers-color-scheme: dark) {
-  .prose code {
-    background-color: rgb(55 65 81);
-    color: rgb(229 231 235);
-  }
-  
-  .prose pre {
-    background-color: rgb(55 65 81);
-  }
-  
-  .prose blockquote {
-    border-left-color: rgb(75 85 99);
-    color: rgb(156 163 175);
-  }
-  
-  .prose hr {
-    background-color: rgb(75 85 99);
-    opacity: 0.4;
-  }
 }
 
 /* KaTeX math rendering styles */

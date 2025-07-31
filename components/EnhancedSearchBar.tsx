@@ -67,7 +67,7 @@ export default function EnhancedSearchBar({ chats, onFilter, className = '' }: E
           placeholder="Search conversations..."
           value={filters.query}
           onChange={(e) => handleQueryChange(e.target.value)}
-          className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
         <button
           onClick={() => setShowAdvanced(!showAdvanced)}
