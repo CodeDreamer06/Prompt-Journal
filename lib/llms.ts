@@ -84,5 +84,12 @@ export const LLM_CONFIGS: Record<LLMType, LLMConfig> = {
     color: 'border-cyan-500',
     textColor: 'text-cyan-600 dark:text-cyan-400',
     bgColor: 'bg-cyan-50 dark:bg-cyan-950'
+  },
+  'k2': {
+    name: 'k2',
+    logo: '/logos/moonshot.png',
+    color: 'border-purple-500',
+    textColor: 'text-purple-600 dark:text-purple-400',
+    bgColor: 'bg-purple-50 dark:bg-purple-950'
   }
 };
