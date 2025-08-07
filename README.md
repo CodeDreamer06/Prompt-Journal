@@ -69,14 +69,19 @@ Each LLM gets distinctive styling and branding:
 
 | LLM | Theme | Logo | Use Case |
 |-----|-------|------|----------|
-| **ChatGPT** | Green | 🤖 | General conversations, coding help |
-| **Claude** | Orange | 🧠 | Analysis, writing assistance |
-| **Gemini** | Blue | ✨ | Research, creative tasks |
-| **GPT-4** | Emerald | 4️⃣ | Advanced reasoning |
-| **Perplexity** | Cyan | 🔍 | Research and fact-checking |
-| **Llama** | Red | 🦙 | Open-source AI conversations |
-| **Mistral** | Indigo | 🌪️ | European AI model discussions |
-| **Custom** | Purple | ⚡ | Any other LLM |
+| **GPT-4o** | Green | 🤖 | General conversations, coding help |
+| **GPT-4.1** | Green | 🤖 | Enhanced GPT-4 conversations |
+| **GPT-o3** | Emerald | 🧠 | Advanced reasoning model |
+| **GPT-o4-mini** | Emerald | 🧠 | Lightweight reasoning model |
+| **k2** | Purple | 🌙 | Moonshot AI conversations |
+| **Gemini 2.5 Flash** | Blue | ✨ | Fast Google AI responses |
+| **Gemini 2.5 Pro** | Blue | ✨ | Advanced Google AI model |
+| **Qwen-3** | Yellow | 🔶 | Alibaba's AI model |
+| **Grok-4** | Gray | ⚡ | X.AI's conversational AI |
+| **DeepSeek R1** | Pink | 🔍 | DeepSeek reasoning model |
+| **Claude 4 Sonnet** | Orange | 🧠 | Anthropic's latest model |
+| **Perplexity Sonar Pro** | Cyan | 🔍 | Research and fact-checking |
+| **Perplexity Sonar Reasoning** | Cyan | 🔍 | Advanced research AI |
 
 ### 🛠️ Technical Features
 - **Global Storage**: Vercel KV (Redis) for worldwide accessibility
@@ -192,6 +197,8 @@ Prompt-Journal/
 ├── 📁 app/                          # Next.js 15 App Router
 │   ├── 📄 layout.tsx               # Root layout, theme, metadata
 │   ├── 📄 page.tsx                 # Homepage (public blog)
+│   ├── 📄 Providers.tsx            # Theme and context providers
+│   ├── 📄 globals.css              # Global styles and Tailwind
 │   ├── 📄 sitemap.ts               # SEO sitemap generation
 │   ├── 📄 robots.ts                # SEO robots.txt
 │   │
@@ -207,16 +214,23 @@ Prompt-Journal/
 │   │   └── 📄 page.tsx             # Individual conversation view
 │   │
 │   └── 📁 api/                     # 🔌 Backend API Routes
-│       └── 📁 chats/               # Chat management endpoints
-│           ├── 📄 route.ts         # Public: GET published chats
-│           ├── 📁 admin/           # Admin: CRUD operations
-│           ├── 📁 [slug]/          # Public: GET chat by slug
-│           └── 📁 migrate/         # Migration: localStorage → KV
+│       ├── 📁 chats/               # Chat management endpoints
+│       │   ├── 📄 route.ts         # Public: GET published chats
+│       │   ├── 📁 [slug]/          # Public: GET chat by slug
+│       │   ├── 📁 admin/           # Admin: CRUD operations
+│       │   ├── 📁 bulk/            # Bulk operations
+│       │   ├── 📁 migrate/         # Migration: localStorage → KV
+│       │   └── 📁 popular/         # Popular chats endpoint
+│       ├── 📁 health/              # Health check endpoint
+│       └── 📁 test-kv/             # KV storage testing
 │
 ├── 📁 components/                   # 🧩 Reusable UI Components
+│   ├── 📄 AutoSaveEditor.tsx      # Auto-saving markdown editor
 │   ├── 📄 ChatViewer.tsx          # Renders conversations with syntax highlighting
+│   ├── 📄 EnhancedSearchBar.tsx   # Advanced search with filters
 │   ├── 📄 LLMBadge.tsx            # LLM logos and themed badges
-│   ├── 📄 SearchBar.tsx           # Search and filter functionality
+│   ├── 📄 MarkdownRenderer.tsx    # Markdown to HTML converter
+│   ├── 📄 SearchBar.tsx           # Basic search functionality
 │   └── 📄 ThemeToggle.tsx         # Dark/light mode switcher
 │
 ├── 📁 lib/                         # 🛠️ Utilities & Configuration
@@ -225,13 +239,21 @@ Prompt-Journal/
 │   ├── 📄 storage.ts              # Legacy localStorage functions
 │   ├── 📄 api-storage.ts          # Modern API-based storage
 │   ├── 📄 auth.ts                 # Admin authentication helpers
-│   └── 📄 markdown.ts             # Markdown parsing utilities
+│   ├── 📄 markdown.ts             # Markdown parsing utilities
+│   ├── 📄 reading-time.ts         # Reading time calculation
+│   └── 📄 search.ts               # Search functionality utilities
 │
 ├── 📁 public/                      # 📦 Static Assets
-│   └── 📁 logos/                  # LLM logo SVG files
-│       ├── 📄 chatgpt.svg         # ChatGPT logo
-│       ├── 📄 claude.svg          # Claude logo
-│       └── 📄 ...                 # Other LLM logos
+│   └── 📁 logos/                  # LLM logo PNG files
+│       ├── 📄 gpt.png             # GPT models logo
+│       ├── 📄 gpt-reasoning.png   # GPT reasoning models logo
+│       ├── 📄 claude.png          # Claude logo
+│       ├── 📄 gemini.png          # Gemini logo
+│       ├── 📄 moonshot.png        # Moonshot AI (k2) logo
+│       ├── 📄 qwen.png            # Qwen logo
+│       ├── 📄 grok.png            # Grok logo
+│       ├── 📄 deepseek.png        # DeepSeek logo
+│       └── 📄 perplexity.png      # Perplexity logo
 │
 ├── 📄 package.json                # Dependencies and scripts
 ├── 📄 next.config.ts              # Next.js configuration
@@ -302,21 +324,21 @@ npm run lint
 
 1. **Update types** in `lib/types.ts`:
    ```typescript
-   export type LLMType = 'chatgpt' | 'claude' | 'your-new-llm';
+   export type LLMType = 'gpt-4o' | 'gpt-4.1' | 'gpt-o3' | 'gpt-o4-mini' | 'k2' | 'your-new-llm';
    ```
 
 2. **Add configuration** in `lib/llms.ts`:
    ```typescript
    'your-new-llm': {
      name: 'Your New LLM',
-     logo: '/logos/your-llm.svg',
+     logo: '/logos/your-llm.png',
      color: 'border-purple-500',
      textColor: 'text-purple-600 dark:text-purple-400',
      bgColor: 'bg-purple-50 dark:bg-purple-950'
    }
    ```
 
-3. **Add logo** in `public/logos/your-llm.svg`
+3. **Add logo** in `public/logos/your-llm.png`
 
 #### Modifying the Chat Display
 
