@@ -64,24 +64,6 @@ Transform your AI conversations into a professional blog that others can explore
 - **Import/Export**: Backup and restore conversation data
 - **Migration Tools**: Auto-migrate from localStorage to cloud storage
 
-### 🤖 Multi-LLM Support
-Each LLM gets distinctive styling and branding:
-
-| LLM | Theme | Logo | Use Case |
-|-----|-------|------|----------|
-| **GPT-4o** | Green | 🤖 | General conversations, coding help |
-| **GPT-4.1** | Green | 🤖 | Enhanced GPT-4 conversations |
-| **GPT-o3** | Emerald | 🧠 | Advanced reasoning model |
-| **GPT-o4-mini** | Emerald | 🧠 | Lightweight reasoning model |
-| **k2** | Purple | 🌙 | Moonshot AI conversations |
-| **Gemini 2.5 Flash** | Blue | ✨ | Fast Google AI responses |
-| **Gemini 2.5 Pro** | Blue | ✨ | Advanced Google AI model |
-| **Qwen-3** | Yellow | 🔶 | Alibaba's AI model |
-| **Grok-4** | Gray | ⚡ | X.AI's conversational AI |
-| **DeepSeek R1** | Pink | 🔍 | DeepSeek reasoning model |
-| **Claude 4 Sonnet** | Orange | 🧠 | Anthropic's latest model |
-| **Perplexity Sonar Pro** | Cyan | 🔍 | Research and fact-checking |
-| **Perplexity Sonar Reasoning** | Cyan | 🔍 | Advanced research AI |
 
 ### 🛠️ Technical Features
 - **Global Storage**: Vercel KV (Redis) for worldwide accessibility
