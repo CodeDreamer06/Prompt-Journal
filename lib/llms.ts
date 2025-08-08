@@ -15,6 +15,13 @@ export const LLM_CONFIGS: Record<LLMType, LLMConfig> = {
     textColor: 'text-green-600 dark:text-green-400',
     bgColor: 'bg-green-50 dark:bg-green-950'
   },
+  'gpt-5': {
+    name: '5',
+    logo: '/logos/gpt-5.png',
+    color: 'border-green-500',
+    textColor: 'text-green-600 dark:text-green-400',
+    bgColor: 'bg-green-50 dark:bg-green-950'
+  },
   'gpt-o3': {
     name: 'o3',
     logo: '/logos/gpt-reasoning.png',
