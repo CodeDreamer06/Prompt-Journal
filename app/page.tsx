@@ -1,20 +1,25 @@
 'use client';
 
+/* Hallmark · genre: modern-minimal · macrostructure: Ecosystem Index · theme: cobalt · designed-as-app */
+
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
-import { Search, Settings } from 'lucide-react';
-import { Chat } from '@/lib/types';
+import { Tag, Calendar, Terminal } from 'lucide-react';
+import { Chat, LLMType } from '@/lib/types';
 import { loadPublicChats } from '@/lib/api-storage';
+import { getPopularChats, getAllTags } from '@/lib/search';
+import { LLM_CONFIGS } from '@/lib/llms';
 import LLMBadge from '@/components/LLMBadge';
-import SearchBar from '@/components/SearchBar';
-import ThemeToggle from '@/components/ThemeToggle';
-import Fuse from 'fuse.js';
+import Header from '@/components/Header';
 
 export default function Home() {
   const [chats, setChats] = useState<Chat[]>([]);
   const [filteredChats, setFilteredChats] = useState<Chat[]>([]);
+  const [popularChats, setPopularChats] = useState<Chat[]>([]);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [selectedLLM, setSelectedLLM] = useState<LLMType | ''>('');
+  const [selectedTag, setSelectedTag] = useState<string>('');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -25,205 +30,332 @@ export default function Home() {
       setChats(loadedChats);
       setFilteredChats(loadedChats);
       
+      // Get popular chats (top 3)
+      const popular = getPopularChats(loadedChats, 3);
+      setPopularChats(popular);
+      
       // Extract all unique tags
-      const tags = Array.from(new Set(loadedChats.flatMap((chat: Chat) => chat.tags)));
+      const tags = getAllTags(loadedChats);
       setAvailableTags(tags);
     };
     
     loadChatsData();
   }, []);
 
-  const handleSearch = (query: string, llm?: string, tags: string[] = []) => {
+  // Filter handler
+  useEffect(() => {
     let filtered = chats;
 
-    // Filter by LLM
-    if (llm) {
-      filtered = filtered.filter((chat: Chat) => chat.llm === llm);
+    if (selectedLLM) {
+      filtered = filtered.filter((chat) => chat.llm === selectedLLM);
     }
 
-    // Filter by tags
-    if (tags.length > 0) {
-      filtered = filtered.filter((chat: Chat) => 
-        tags.every(tag => chat.tags.includes(tag))
-      );
-    }
-
-    // Search by query
-    if (query.trim()) {
-      const fuse = new Fuse(filtered, {
-        keys: ['title', 'content', 'excerpt'],
-        threshold: 0.3,
-      });
-      filtered = fuse.search(query).map(result => result.item);
+    if (selectedTag) {
+      filtered = filtered.filter((chat) => chat.tags.includes(selectedTag));
     }
 
     setFilteredChats(filtered);
+  }, [selectedLLM, selectedTag, chats]);
+
+  const clearFilters = () => {
+    setSelectedLLM('');
+    setSelectedTag('');
   };
 
+  const isFiltering = selectedLLM !== '' || selectedTag !== '';
+
   if (!mounted) {
-    return <div className="min-h-screen bg-background" />; // Prevent hydration mismatch
+    return <div className="min-h-screen bg-paper" />; // Prevent hydration mismatch
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-900/80 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Prompt Journal
-              </h1>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                by CodeDreamer06
-              </span>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <ThemeToggle />
-              <Link
-                href="/admin"
-                className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
-                title="Admin Panel"
-              >
-                <Settings className="w-5 h-5" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-paper text-ink selection:bg-accent/20">
+      
+      {/* Global Navigation Header */}
+      <Header />
 
-      {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Hero Section */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            LLM Conversations
-          </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Explore interesting conversations with AI assistants. From coding help to creative writing, 
-            discover insights from various LLM interactions.
+      {/* Main Content Container */}
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+        
+        {/* Hero Section (Ecosystem Index: brief paragraph, left-aligned, no shouting display) */}
+        <div className="border-b border-rule pb-8">
+          <div className="font-mono text-[10px] uppercase tracking-wider text-accent mb-2">
+            01 · index
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-semibold font-display tracking-tight text-ink mb-4 max-w-3xl">
+            conversations with large language models
+          </h1>
+          <p className="text-base text-ink-2 max-w-2xl font-body leading-relaxed">
+            an open journal documenting coding assistance, technical logic verification, design audits, and creative writing experiments across AI models.
           </p>
         </div>
 
-        {/* Search */}
-        <div className="mb-8">
-          <SearchBar onSearch={handleSearch} availableTags={availableTags} />
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+        {/* Technical Stat Strip (T4 Numbered stat strip: clean tabular columns) */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border border-rule rounded-card bg-paper-2 divide-y sm:divide-y-0 sm:divide-x divide-rule">
+          <div className="p-4 flex items-center justify-between">
+            <div>
+              <div className="font-mono text-[10px] uppercase tracking-wider text-ink-2">
+                Total Logs
+              </div>
+              <div className="text-sm font-body text-ink-2">recorded interactions</div>
+            </div>
+            <div className="text-3xl font-semibold font-display text-accent tabular-nums">
               {chats.length}
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              Total Conversations
-            </div>
           </div>
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-            <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+          <div className="p-4 flex items-center justify-between">
+            <div>
+              <div className="font-mono text-[10px] uppercase tracking-wider text-ink-2">
+                AI Assistants
+              </div>
+              <div className="text-sm font-body text-ink-2">different model types</div>
+            </div>
+            <div className="text-3xl font-semibold font-display text-accent tabular-nums">
               {new Set(chats.map(chat => chat.llm)).size}
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              Different LLMs
-            </div>
           </div>
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-            <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-              {availableTags.length}
+          <div className="p-4 flex items-center justify-between">
+            <div>
+              <div className="font-mono text-[10px] uppercase tracking-wider text-ink-2">
+                Unique Tags
+              </div>
+              <div className="text-sm font-body text-ink-2">categories cataloged</div>
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              Unique Tags
+            <div className="text-3xl font-semibold font-display text-accent tabular-nums">
+              {availableTags.length}
             </div>
           </div>
         </div>
 
-        {/* Chat List */}
-        {filteredChats.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-gray-400 dark:text-gray-600 mb-4">
-              <Search className="w-12 h-12 mx-auto" />
+        {/* Filter Toolbar (Tabs & Dropdowns) */}
+        <div className="border border-rule rounded-card bg-paper-2 p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="font-mono text-[10px] uppercase tracking-wider text-ink-2 mr-2">
+              Model:
+            </span>
+            <button
+              onClick={() => setSelectedLLM('')}
+              className={`px-3 py-1 text-xs font-medium rounded-input border transition-colors ${
+                selectedLLM === ''
+                  ? 'bg-accent border-accent text-accent-ink'
+                  : 'bg-paper border-rule text-ink hover:border-accent'
+              }`}
+            >
+              all models
+            </button>
+            {Object.keys(LLM_CONFIGS).map((llmKey) => {
+              const name = LLM_CONFIGS[llmKey as LLMType]?.name || llmKey;
+              return (
+                <button
+                  key={llmKey}
+                  onClick={() => setSelectedLLM(llmKey as LLMType)}
+                  className={`px-3 py-1 text-xs font-medium rounded-input border transition-colors ${
+                    selectedLLM === llmKey
+                      ? 'bg-accent border-accent text-accent-ink'
+                      : 'bg-paper border-rule text-ink hover:border-accent'
+                  }`}
+                >
+                  {name.toLowerCase()}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="flex items-center gap-3">
+            {availableTags.length > 0 && (
+              <div className="flex items-center gap-2 w-full md:w-auto">
+                <span className="font-mono text-[10px] uppercase tracking-wider text-ink-2">
+                  Tag:
+                </span>
+                <select
+                  value={selectedTag}
+                  onChange={(e) => setSelectedTag(e.target.value)}
+                  className="px-3 py-1.5 border border-rule rounded-input bg-paper text-xs text-ink font-body outline-none focus:border-accent"
+                >
+                  <option value="">all tags</option>
+                  {availableTags.map((tag) => (
+                    <option key={tag} value={tag}>
+                      {tag.toLowerCase()}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {isFiltering && (
+              <button
+                onClick={clearFilters}
+                className="font-mono text-[10px] uppercase tracking-wider text-red-500 hover:text-red-600 transition-colors py-1.5"
+              >
+                clear
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Search / Filter Active Results Grid */}
+        {isFiltering ? (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between border-b border-rule pb-2">
+              <h2 className="text-sm font-semibold font-mono uppercase tracking-wider text-ink-2">
+                Filtered logs ({filteredChats.length})
+              </h2>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-              No conversations found
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              {chats.length === 0 
-                ? "No conversations have been published yet."
-                : "Try adjusting your search filters."
-              }
-            </p>
+            
+            {filteredChats.length === 0 ? (
+              <div className="text-center py-12 border border-rule border-dashed rounded-card bg-paper-2">
+                <Terminal className="w-8 h-8 mx-auto text-ink-2 mb-3 opacity-60" />
+                <h3 className="text-sm font-semibold font-display text-ink mb-1">
+                  no matching logs
+                </h3>
+                <p className="text-xs text-ink-2">
+                  try clearing filters or adjusting parameters.
+                </p>
+              </div>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {filteredChats.map((chat) => (
+                  <ChatCard key={chat.id} chat={chat} />
+                ))}
+              </div>
+            )}
           </div>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredChats.map((chat) => (
-              <Link
-                key={chat.id}
-                href={`/chat/${chat.slug}`}
-                className="group block bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 hover:shadow-lg"
-              >
-                <div className="p-6">
-                  <div className="flex items-start justify-between mb-3">
-                    <LLMBadge llm={chat.llm} size="sm" />
-                    <time className="text-sm text-gray-500 dark:text-gray-400">
-                      {formatDistanceToNow(new Date(chat.createdAt), { addSuffix: true })}
-                    </time>
-                  </div>
-                  
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    {chat.title}
-                  </h3>
-                  
-                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-3">
-                    {chat.excerpt}
-                  </p>
-                  
-                  {chat.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {chat.tags.slice(0, 3).map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                      {chat.tags.length > 3 && (
-                        <span className="px-2 py-1 text-xs text-gray-500 dark:text-gray-500">
-                          +{chat.tags.length - 3} more
-                        </span>
-                      )}
-                    </div>
-                  )}
+          /* Default Ecosystem Index rails */
+          <div className="space-y-12">
+            
+            {/* Rail 1: Featured Conversations (Sorted by views) */}
+            {popularChats.length > 0 && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between border-b border-rule pb-2">
+                  <h2 className="text-sm font-semibold font-mono uppercase tracking-wider text-ink-2">
+                    featured logs · popular cuts
+                  </h2>
+                  <span className="font-mono text-[10px] text-ink-2 opacity-60">views count</span>
                 </div>
-              </Link>
-            ))}
+                <div className="grid gap-6 md:grid-cols-3">
+                  {popularChats.map((chat) => (
+                    <ChatCard key={chat.id} chat={chat} isFeatured />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Rail 2: Latest Conversations (All logs) */}
+            <div className="space-y-6">
+              <div className="flex items-center justify-between border-b border-rule pb-2">
+                <h2 className="text-sm font-semibold font-mono uppercase tracking-wider text-ink-2">
+                  all logs · chronicle
+                </h2>
+                <span className="font-mono text-[10px] text-ink-2 opacity-60">latest first</span>
+              </div>
+
+              {chats.length === 0 ? (
+                <div className="text-center py-12 border border-rule border-dashed rounded-card bg-paper-2">
+                  <Terminal className="w-8 h-8 mx-auto text-ink-2 mb-3 opacity-60" />
+                  <h3 className="text-sm font-semibold font-display text-ink mb-1">
+                    archive is empty
+                  </h3>
+                  <p className="text-xs text-ink-2">
+                    no conversations have been published to the journal yet.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {chats.map((chat) => (
+                    <ChatCard key={chat.id} chat={chat} />
+                  ))}
+                </div>
+              )}
+            </div>
+
           </div>
         )}
+
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-200 dark:border-gray-700 mt-16">
+      {/* Footer (Ft2: Inline single line) */}
+      <footer className="border-t border-rule bg-paper-2 mt-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center text-gray-600 dark:text-gray-400">
-            <p>
-              Built with love by{' '}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-ink-2">
+            <div>
+              prompt journal &copy; {new Date().getFullYear()} · codedreamer06
+            </div>
+            <div className="flex items-center gap-4">
               <a
                 href="https://github.com/CodeDreamer06"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 dark:text-blue-400 hover:underline"
+                className="hover:text-accent transition-colors"
               >
-                CodeDreamer06
+                github
               </a>
-            </p>
-            <p className="mt-2 text-sm">
-              Powered by Next.js, Tailwind CSS, and lots of coffee
-            </p>
+              <span>·</span>
+              <Link href="/admin" className="hover:text-accent transition-colors">
+                admin board
+              </Link>
+            </div>
           </div>
         </div>
       </footer>
+
     </div>
+  );
+}
+
+/* Reusable Chat Card Component styled strictly in Cobalt */
+function ChatCard({ chat, isFeatured = false }: { chat: Chat; isFeatured?: boolean }) {
+  return (
+    <Link
+      href={`/chat/${chat.slug}`}
+      className={`group flex flex-col justify-between border border-rule rounded-card p-5 bg-paper transition-all duration-200 hover:border-accent ${
+        isFeatured ? 'bg-paper-2 md:col-span-1 shadow-[0_1px_2px_rgba(0,0,0,0.02)]' : ''
+      }`}
+    >
+      <div className="space-y-3">
+        
+        {/* Badge & Meta */}
+        <div className="flex items-center justify-between">
+          <LLMBadge llm={chat.llm} size="sm" />
+          <div className="flex items-center gap-1 font-mono text-[9px] text-ink-2 uppercase tracking-wide">
+            <Calendar className="w-3 h-3 opacity-60" />
+            <span>
+              {formatDistanceToNow(new Date(chat.createdAt), { addSuffix: true })}
+            </span>
+          </div>
+        </div>
+
+        {/* Title */}
+        <h3 className="text-base font-semibold font-display tracking-tight text-ink group-hover:text-accent transition-colors">
+          {chat.title}
+        </h3>
+
+        {/* Excerpt */}
+        <p className="text-xs text-ink-2 font-body leading-relaxed line-clamp-3">
+          {chat.excerpt}
+        </p>
+
+      </div>
+
+      {/* Tags */}
+      {chat.tags.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mt-4 pt-3 border-t border-rule/60">
+          <Tag className="w-3 h-3 text-ink-2 opacity-40 self-center" />
+          {chat.tags.slice(0, 3).map((tag) => (
+            <span
+              key={tag}
+              className="px-1.5 py-0.5 text-[10px] font-mono bg-paper-3 border border-rule text-ink-2 rounded"
+            >
+              {tag.toLowerCase()}
+            </span>
+          ))}
+          {chat.tags.length > 3 && (
+            <span className="text-[10px] font-mono text-ink-2 opacity-50 self-center">
+              +{chat.tags.length - 3}
+            </span>
+          )}
+        </div>
+      )}
+    </Link>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { Copy, User, Bot } from 'lucide-react';
+import { Copy, Check, User, Terminal } from 'lucide-react';
 import { useState } from 'react';
 import { parseConversation } from '@/lib/markdown';
 import MarkdownRenderer from './MarkdownRenderer';
@@ -27,7 +27,7 @@ export default function ChatViewer({ content, pageType = 'conversation', classNa
   // For pure markdown pages, render directly without conversation parsing
   if (pageType === 'markdown') {
     return (
-      <div className={`${className}`}>
+      <div className={`${className} bg-paper p-6 border border-rule rounded-card`}>
         <MarkdownRenderer content={content} variant="page" />
       </div>
     );
@@ -37,44 +37,61 @@ export default function ChatViewer({ content, pageType = 'conversation', classNa
   const messages = parseConversation(content);
 
   return (
-    <div className={`space-y-8 ${className}`}>
-      {messages.map((message, index) => (
-        <div key={index} className="group relative">
-          <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-              {message.type === 'user' ? (
-                <User className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-              ) : (
-                <Bot className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-              )}
-            </div>
-            
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                  {message.type === 'user' ? 'You' : 'Assistant'}
+    <div className={`space-y-6 ${className}`}>
+      {messages.map((message, index) => {
+        const isUser = message.type === 'user';
+        
+        return (
+          <div
+            key={index}
+            className={`border rounded-card overflow-hidden transition-all duration-200 ${
+              isUser
+                ? 'bg-paper border-rule'
+                : 'bg-paper-2 border-rule-2'
+            }`}
+          >
+            {/* Message Header */}
+            <div className="flex items-center justify-between px-4 py-2 border-b border-rule bg-paper-3/40">
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded-full flex items-center justify-center bg-paper border border-rule">
+                  {isUser ? (
+                    <User className="w-3 h-3 text-ink-2" />
+                  ) : (
+                    <Terminal className="w-3 h-3 text-accent" />
+                  )}
+                </div>
+                <span className="font-mono text-[10px] uppercase tracking-wider text-ink-2">
+                  {isUser ? 'user input' : 'assistant reply'}
                 </span>
               </div>
               
               <button
                 onClick={() => copyToClipboard(message.content, index)}
-                className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                title="Copy message"
+                className="flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider text-ink-2 hover:text-accent transition-colors py-1 px-2 rounded hover:bg-paper-2 border border-transparent hover:border-rule"
+                title="Copy full message content"
               >
                 {copiedIndex === index ? (
-                  <span className="text-xs text-green-600 dark:text-green-400">Copied!</span>
+                  <>
+                    <Check className="w-3 h-3 text-green-500" />
+                    <span className="text-green-500">copied</span>
+                  </>
                 ) : (
-                  <Copy className="w-4 h-4" />
+                  <>
+                    <Copy className="w-3 h-3" />
+                    <span>copy</span>
+                  </>
                 )}
               </button>
             </div>
+            
+            {/* Message Content */}
+            <div className="p-5 sm:p-6 font-body leading-relaxed text-ink text-sm sm:text-base">
+              <MarkdownRenderer content={message.content} variant="conversation" />
+            </div>
+
           </div>
-          
-          <div className="ml-12">
-            <MarkdownRenderer content={message.content} variant="conversation" />
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

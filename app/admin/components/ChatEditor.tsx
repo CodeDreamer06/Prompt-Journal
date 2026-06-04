@@ -1,7 +1,9 @@
 'use client';
 
+/* Hallmark · genre: modern-minimal · macrostructure: Workbench · theme: cobalt · designed-as-app */
+
 import { useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Terminal, Edit3 } from 'lucide-react';
 import { LLMType } from '@/lib/types';
 import { LLM_CONFIGS } from '@/lib/llms';
 import { generateSlug } from '@/lib/api-storage';
@@ -80,97 +82,117 @@ Another response from the AI`;
   return (
     <div className="max-w-6xl mx-auto">
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Header Controls */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        
+        {/* Header Controls (Technical spec buttons with 6px radii) */}
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-rule pb-4">
+          <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => setShowPreview(!showPreview)}
-              className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-ink-2 hover:text-ink px-3 py-1.5 border border-rule rounded-btn bg-paper hover:bg-paper-2 transition-colors"
             >
-              {showPreview ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              {showPreview ? 'Hide Preview' : 'Show Preview'}
+              {showPreview ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+              <span>{showPreview ? 'hide preview' : 'show preview'}</span>
             </button>
             
             <button
               type="button"
               onClick={insertTemplate}
-              className="px-3 py-2 text-sm text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-lg transition-colors"
+              className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-accent hover:underline py-1.5 px-2"
             >
-              Insert Template
+              <Terminal className="w-3.5 h-3.5" />
+              <span>insert template</span>
             </button>
           </div>
           
-          <div className="flex items-center gap-3">
-            <label className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
+            <label className="flex items-center gap-2 cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={isPublished}
                 onChange={(e) => setIsPublished(e.target.checked)}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                className="w-4 h-4 rounded border-rule text-accent focus:ring-accent accent-accent bg-paper cursor-pointer"
               />
-              <span className="text-sm text-gray-700 dark:text-gray-300">
-                Published
+              <span className="font-mono text-[10px] uppercase tracking-wider text-ink-2">
+                publish public
               </span>
             </label>
             
             <button
               type="button"
               onClick={onCancel}
-              className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+              className="font-mono text-[10px] uppercase tracking-wider text-ink-2 hover:text-ink transition-colors py-1.5 px-3"
             >
-              Cancel
+              cancel
             </button>
             
             <button
               type="submit"
               disabled={isLoading || !title.trim() || !content.trim()}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center gap-1.5 bg-accent text-accent-ink px-4 py-2 rounded-btn text-xs font-semibold hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-display"
             >
-              {isLoading ? 'Saving...' : 'Save'}
+              <Edit3 className="w-3.5 h-3.5" />
+              <span>{isLoading ? 'saving...' : 'save log'}</span>
             </button>
           </div>
         </div>
 
+        {/* Form and Preview Split Grid */}
         <div className={`grid gap-6 ${showPreview ? 'lg:grid-cols-5' : 'grid-cols-1'}`}>
-          {/* Editor */}
-          <div className={`space-y-4 ${showPreview ? 'lg:col-span-2' : ''}`}>
-            <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Title
+          
+          {/* Editor Form */}
+          <div className={`space-y-5 ${showPreview ? 'lg:col-span-2' : ''}`}>
+            
+            {/* Title Input */}
+            <div className="space-y-2">
+              <label
+                htmlFor="title"
+                className="block font-mono text-[10px] uppercase tracking-wider text-ink-2"
+              >
+                Log Title
               </label>
               <input
                 type="text"
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-rule rounded-input bg-paper text-ink font-body outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all text-sm"
                 placeholder="Enter conversation title..."
                 required
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="llm" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  LLM
+            {/* Model & Tags inline */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              
+              {/* LLM Selector */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="llm"
+                  className="block font-mono text-[10px] uppercase tracking-wider text-ink-2"
+                >
+                  AI Model
                 </label>
                 <select
                   id="llm"
                   value={llm}
                   onChange={(e) => setLlm(e.target.value as LLMType)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-rule rounded-input bg-paper text-ink font-body outline-none focus:border-accent text-sm"
                 >
                   {Object.entries(LLM_CONFIGS).map(([key, config]) => (
                     <option key={key} value={key}>
-                      {config.logo} {config.name}
+                      {config.name.toLowerCase()}
                     </option>
                   ))}
                 </select>
               </div>
 
-              <div>
-                <label htmlFor="tags" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {/* Tags input */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="tags"
+                  className="block font-mono text-[10px] uppercase tracking-wider text-ink-2"
+                >
                   Tags (comma-separated)
                 </label>
                 <input
@@ -178,45 +200,55 @@ Another response from the AI`;
                   id="tags"
                   value={tags}
                   onChange={(e) => setTags(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="react, javascript, coding..."
+                  className="w-full px-3 py-2 border border-rule rounded-input bg-paper text-ink font-body outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all text-sm"
+                  placeholder="react, typescript, css"
                 />
               </div>
+
             </div>
 
-            <div>
-              <label htmlFor="content" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Content (Markdown)
+            {/* Markdown Text Area */}
+            <div className="space-y-2">
+              <label
+                htmlFor="content"
+                className="block font-mono text-[10px] uppercase tracking-wider text-ink-2"
+              >
+                Conversation Content (Markdown syntax)
               </label>
               <textarea
                 id="content"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                rows={20}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
+                rows={18}
+                className="w-full px-3 py-2 border border-rule rounded-input bg-paper text-ink font-mono outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all text-xs leading-relaxed"
                 placeholder="Paste your conversation here..."
                 required
               />
             </div>
+
           </div>
 
-          {/* Preview */}
+          {/* Real-time Preview Area */}
           {showPreview && (
-            <div className="lg:col-span-3 border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800 max-h-[600px] overflow-y-auto">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                Preview
-              </h3>
-              {content.trim() ? (
-                <div className="prose prose-sm dark:prose-invert max-w-none">
+            <div className="lg:col-span-3 border border-rule rounded-card bg-paper-2 p-5 flex flex-col space-y-4 max-h-[660px] overflow-y-auto">
+              <div className="flex items-center justify-between border-b border-rule pb-2">
+                <h3 className="text-xs font-semibold font-mono uppercase tracking-wider text-ink-2">
+                  real-time render preview
+                </h3>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto">
+                {content.trim() ? (
                   <ChatViewer content={content} />
-                </div>
-              ) : (
-                <div className="text-gray-500 dark:text-gray-400 text-center py-8">
-                  Enter content to see preview
-                </div>
-              )}
+                ) : (
+                  <div className="text-ink-2 text-center py-12 font-mono text-[10px] uppercase">
+                    waiting for input content...
+                  </div>
+                )}
+              </div>
             </div>
           )}
+
         </div>
       </form>
     </div>
