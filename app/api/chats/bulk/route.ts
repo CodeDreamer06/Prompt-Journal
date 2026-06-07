@@ -1,12 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from 'redis';
-import { Chat, BulkOperation } from '@/lib/types';
-
-const CHATS_KEY = 'prompt-journal:chats';
-
-const redis = createClient({
-  url: process.env.REDIS_URL
-});
+import { db, initDb, mapRowToChat } from '@/lib/db';
+import { BulkOperation } from '@/lib/types';
 
 // POST /api/chats/bulk - Bulk operations on chats
 export async function POST(request: NextRequest) {
@@ -18,70 +12,64 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    if (!redis.isOpen) {
-      await redis.connect();
+    if (!operation.chatIds || operation.chatIds.length === 0) {
+      return NextResponse.json({ error: 'No chat IDs provided' }, { status: 400 });
     }
     
-    // Get existing chats
-    const chatsData = await redis.get(CHATS_KEY);
-    const chats: Chat[] = chatsData ? JSON.parse(chatsData) : [];
+    await initDb();
     
-    const result: { success: boolean; [key: string]: unknown } = { success: true };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result: { success: boolean; [key: string]: any } = { success: true };
+    const placeholders = operation.chatIds.map(() => '?').join(', ');
+    const updatedAt = new Date().toISOString();
     
     switch (operation.type) {
       case 'delete':
-        const beforeCount = chats.length;
-        const filteredChats = chats.filter(chat => !operation.chatIds.includes(chat.id));
-        await redis.set(CHATS_KEY, JSON.stringify(filteredChats));
-        result.deletedCount = beforeCount - filteredChats.length;
+        const delRes = await db.execute({
+          sql: `DELETE FROM chats WHERE id IN (${placeholders})`,
+          args: operation.chatIds
+        });
+        result.deletedCount = Number(delRes.rowsAffected);
         break;
         
       case 'publish':
-        chats.forEach(chat => {
-          if (operation.chatIds.includes(chat.id)) {
-            chat.isPublished = true;
-            chat.updatedAt = new Date().toISOString();
-          }
+        const pubRes = await db.execute({
+          sql: `UPDATE chats SET isPublished = 1, updatedAt = ? WHERE id IN (${placeholders})`,
+          args: [updatedAt, ...operation.chatIds]
         });
-        await redis.set(CHATS_KEY, JSON.stringify(chats));
-        result.updatedCount = operation.chatIds.length;
+        result.updatedCount = Number(pubRes.rowsAffected);
         break;
         
       case 'unpublish':
-        chats.forEach(chat => {
-          if (operation.chatIds.includes(chat.id)) {
-            chat.isPublished = false;
-            chat.updatedAt = new Date().toISOString();
-          }
+        const unpubRes = await db.execute({
+          sql: `UPDATE chats SET isPublished = 0, updatedAt = ? WHERE id IN (${placeholders})`,
+          args: [updatedAt, ...operation.chatIds]
         });
-        await redis.set(CHATS_KEY, JSON.stringify(chats));
-        result.updatedCount = operation.chatIds.length;
+        result.updatedCount = Number(unpubRes.rowsAffected);
         break;
         
       case 'list':
-        chats.forEach(chat => {
-          if (operation.chatIds.includes(chat.id)) {
-            chat.isUnlisted = false;
-            chat.updatedAt = new Date().toISOString();
-          }
+        const listRes = await db.execute({
+          sql: `UPDATE chats SET isUnlisted = 0, updatedAt = ? WHERE id IN (${placeholders})`,
+          args: [updatedAt, ...operation.chatIds]
         });
-        await redis.set(CHATS_KEY, JSON.stringify(chats));
-        result.updatedCount = operation.chatIds.length;
+        result.updatedCount = Number(listRes.rowsAffected);
         break;
         
       case 'unlist':
-        chats.forEach(chat => {
-          if (operation.chatIds.includes(chat.id)) {
-            chat.isUnlisted = true;
-            chat.updatedAt = new Date().toISOString();
-          }
+        const unlistRes = await db.execute({
+          sql: `UPDATE chats SET isUnlisted = 1, updatedAt = ? WHERE id IN (${placeholders})`,
+          args: [updatedAt, ...operation.chatIds]
         });
-        await redis.set(CHATS_KEY, JSON.stringify(chats));
-        result.updatedCount = operation.chatIds.length;
+        result.updatedCount = Number(unlistRes.rowsAffected);
         break;
         
       case 'export':
-        const chatsToExport = chats.filter(chat => operation.chatIds.includes(chat.id));
+        const exportRes = await db.execute({
+          sql: `SELECT * FROM chats WHERE id IN (${placeholders})`,
+          args: operation.chatIds
+        });
+        const chatsToExport = exportRes.rows.map(mapRowToChat);
         result.data = JSON.stringify(chatsToExport, null, 2);
         break;
         

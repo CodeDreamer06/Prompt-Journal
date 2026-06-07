@@ -1,41 +1,35 @@
 import { NextResponse } from 'next/server';
-import { createClient } from 'redis';
+import { db, initDb } from '@/lib/db';
 
 export async function GET() {
   try {
-    console.log('Testing Redis connection...');
+    console.log('Testing Turso connection...');
+    await initDb();
     
-    const redis = createClient({
-      url: process.env.REDIS_URL
-    });
+    // Test basic query
+    const result = await db.execute(`SELECT 1 + 1 as val`);
+    const val = result.rows[0].val;
     
-    await redis.connect();
-    
-    // Test basic Redis operations
-    await redis.set('test-key', 'test-value');
-    const value = await redis.get('test-key');
-    await redis.del('test-key');
-    
-    await redis.disconnect();
-    
-    console.log('Redis test successful, value:', value);
+    console.log('Turso test successful, result:', val);
     
     return NextResponse.json({ 
       success: true, 
-      message: 'Redis connection working',
-      testValue: value,
+      message: 'Turso connection working',
+      testValue: Number(val),
       env: {
-        hasRedisUrl: !!process.env.REDIS_URL,
+        hasTursoUrl: !!process.env.TURSO_DATABASE_URL,
+        hasTursoToken: !!process.env.TURSO_AUTH_TOKEN,
         hasAdminPassword: !!process.env.NEXT_PUBLIC_ADMIN_PASSWORD
       }
     });
   } catch (error) {
-    console.error('Redis test failed:', error);
+    console.error('Turso test failed:', error);
     return NextResponse.json({ 
       success: false, 
       error: error instanceof Error ? error.message : 'Unknown error',
       env: {
-        hasRedisUrl: !!process.env.REDIS_URL,
+        hasTursoUrl: !!process.env.TURSO_DATABASE_URL,
+        hasTursoToken: !!process.env.TURSO_AUTH_TOKEN,
         hasAdminPassword: !!process.env.NEXT_PUBLIC_ADMIN_PASSWORD
       }
     }, { status: 500 });

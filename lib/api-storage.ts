@@ -17,8 +17,8 @@ export function generateSlug(title: string): string {
 }
 
 export function generateExcerpt(content: string): string {
-  // Extract first user message
-  const userMatch = content.match(/### 🧑‍💻 User\s*\n\n([\s\S]*?)(?=\n\n---|\n\n###|$)/);
+  // Extract first user message (supports both H2 and H3, with and without emoji/ZWJ)
+  const userMatch = content.match(/#{2,3}\s*(?:🧑‍💻|🧑💻)?\s*User\s*\n\n?([\s\S]*?)(?=\n\n---|\n\n#{2,3}|$)/);
   if (userMatch) {
     return userMatch[1].trim().substring(0, 150) + '...';
   }

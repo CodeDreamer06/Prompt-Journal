@@ -2,7 +2,7 @@
 
 > **A modern, beautiful blog platform for sharing LLM conversations with the world**
 
-Transform your AI conversations into a professional blog that others can explore, search, and learn from. Built with Next.js 15, Tailwind CSS 4, TypeScript, and Vercel KV for global accessibility.
+Transform your AI conversations into a professional blog that others can explore, search, and learn from. Built with Next.js 15, Tailwind CSS 4, TypeScript, and Turso SQL Database for global accessibility.
 
 🌐 **Live Demo**: [https://prompt-journal-nine.vercel.app/](https://prompt-journal-nine.vercel.app/)
 
@@ -66,7 +66,7 @@ Transform your AI conversations into a professional blog that others can explore
 
 
 ### 🛠️ Technical Features
-- **Global Storage**: Vercel KV (Redis) for worldwide accessibility
+- **Global Storage**: Turso Cloud DB (libSQL/SQLite) for global accessibility
 - **Real-time Updates**: Instant publishing and updates
 - **Markdown Rendering**: Full markdown support with syntax highlighting
 - **Type Safety**: Full TypeScript implementation
@@ -82,7 +82,7 @@ graph TB
     A[Public Users] --> B[Next.js Frontend]
     C[Admin User] --> B
     B --> D[API Routes]
-    D --> E[Vercel KV Redis]
+    D --> E[Turso Cloud DB]
     B --> F[Static Pages]
     
     subgraph "Frontend"
@@ -102,14 +102,14 @@ graph TB
 ### 🔄 Data Flow
 
 1. **Admin creates/edits** conversations in the admin panel
-2. **Data is stored** in Vercel KV (Redis) for global access
+2. **Data is stored** in Turso Cloud DB for global access
 3. **Public users** can view published conversations
 4. **Search and filtering** happens client-side for speed
 5. **Individual chats** are served via API with caching
 
 ### 🗄️ Data Storage
 
-- **Production**: Vercel KV (Redis) - globally distributed
+- **Production**: Turso Cloud DB (libSQL) - SQLite compatible
 - **Development**: Can use localStorage for testing
 - **Backup**: JSON export/import functionality
 - **Migration**: Automatic localStorage → KV migration
@@ -146,8 +146,9 @@ Edit `.env.local`:
 # Required: Admin password for /admin access
 NEXT_PUBLIC_ADMIN_PASSWORD=your-secure-password
 
-# Required for production: Vercel KV Redis URL
-REDIS_URL=redis://default:password@host:port
+# Required for production: Turso SQL URL and Auth Token
+TURSO_DATABASE_URL=libsql://your-database.turso.io
+TURSO_AUTH_TOKEN=your-auth-token
 
 # Optional: Google Analytics
 NEXT_PUBLIC_GA_ID=your-ga-id
@@ -430,27 +431,20 @@ vercel env add NEXT_PUBLIC_ADMIN_PASSWORD
 
 2. **Configure Environment**:
    - Add `NEXT_PUBLIC_ADMIN_PASSWORD`
-   - Vercel will auto-add `REDIS_URL` when you create KV database
+   - Add `TURSO_DATABASE_URL`
+   - Add `TURSO_AUTH_TOKEN`
 
-3. **Set up Vercel KV**:
-   - Go to Storage tab in Vercel dashboard
-   - Create KV database
-   - Connect to your project
+### 🗄️ Database Setup (Turso SQL)
 
-### 🗄️ Database Setup (Vercel KV)
-
-1. **Create KV Database**:
-   - Vercel Dashboard → Your Project → Storage
-   - Create Database → KV (Redis)
-   - Choose "Hobby" plan (free)
+1. **Create Turso Database**:
+   - Go to [Turso](https://turso.tech) and create a database
+   - Get the Database URL and Auth Token
 
 2. **Connect to Project**:
-   - Select your Prompt Journal project
-   - Environment variables are auto-added
+   - Add `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` to your Vercel project environment variables
 
 3. **Verify Connection**:
-   - Visit `/api/test-kv` on https://chatcraft.org
-   - Should return `"success": true`
+   - Visit `/api/health` on your hosted deployment
 
 ### 🌍 Alternative Deployments
 
@@ -464,7 +458,8 @@ out/
 
 # Environment variables
 NEXT_PUBLIC_ADMIN_PASSWORD=your-password
-REDIS_URL=your-redis-url
+TURSO_DATABASE_URL=your-turso-database-url
+TURSO_AUTH_TOKEN=your-turso-auth-token
 ```
 
 #### Railway

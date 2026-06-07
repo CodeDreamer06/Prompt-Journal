@@ -8,6 +8,7 @@ import { LLMType } from '@/lib/types';
 import { LLM_CONFIGS } from '@/lib/llms';
 import { generateSlug } from '@/lib/api-storage';
 import ChatViewer from '@/components/ChatViewer';
+import LLMSelector from '@/components/LLMSelector';
 
 interface ChatEditorProps {
   initialData?: {
@@ -54,27 +55,16 @@ export default function ChatEditor({ initialData, onSave, onCancel, isLoading }:
   };
 
   const insertTemplate = () => {
-    const template = `### 🧑‍💻 User
+    const template = `## 🧑💻 User
 
 Your question or prompt here
 
 ---
-
-### 🤖 Assistant
+## 🤖 Assistant
 
 The AI's response here with **formatting** and \`code blocks\`
 
----
-
-### 🧑‍💻 User
-
-Follow-up question
-
----
-
-### 🤖 Assistant
-
-Another response from the AI`;
+---`;
 
     setContent(template);
   };
@@ -168,23 +158,15 @@ Another response from the AI`;
               {/* LLM Selector */}
               <div className="space-y-2">
                 <label
-                  htmlFor="llm"
                   className="block font-mono text-[10px] uppercase tracking-wider text-ink-2"
                 >
                   AI Model
                 </label>
-                <select
-                  id="llm"
+                <LLMSelector
                   value={llm}
-                  onChange={(e) => setLlm(e.target.value as LLMType)}
-                  className="w-full px-3 py-2 border border-rule rounded-input bg-paper text-ink font-body outline-none focus:border-accent text-sm"
-                >
-                  {Object.entries(LLM_CONFIGS).map(([key, config]) => (
-                    <option key={key} value={key}>
-                      {config.name.toLowerCase()}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(val) => setLlm(val)}
+                  className="w-full"
+                />
               </div>
 
               {/* Tags input */}

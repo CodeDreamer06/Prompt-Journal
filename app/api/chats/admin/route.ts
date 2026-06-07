@@ -1,12 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from 'redis';
-import { Chat } from '@/lib/types';
-
-const CHATS_KEY = 'prompt-journal:chats';
-
-const redis = createClient({
-  url: process.env.REDIS_URL
-});
+import { db, initDb, mapRowToChat } from '@/lib/db';
 
 // GET /api/chats/admin - Get all chats (published + drafts) for admin
 export async function GET(request: NextRequest) {
@@ -18,12 +11,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    if (!redis.isOpen) {
-      await redis.connect();
-    }
-    
-    const chatsData = await redis.get(CHATS_KEY);
-    const chats: Chat[] = chatsData ? JSON.parse(chatsData) : [];
+    await initDb();
+    const result = await db.execute(`SELECT * FROM chats ORDER BY createdAt DESC`);
+    const chats = result.rows.map(mapRowToChat);
     
     return NextResponse.json(chats);
   } catch (error) {
@@ -42,22 +32,55 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    if (!redis.isOpen) {
-      await redis.connect();
+    await initDb();
+    
+    // Build dynamic update query
+    const setStatements: string[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const args: any[] = [];
+    
+    // Convert fields appropriately
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const mappedUpdates: any = { ...updates };
+    if ('tags' in updates) {
+      mappedUpdates.tags = JSON.stringify(updates.tags || []);
+    }
+    ['isPublished', 'isUnlisted', 'isDraft'].forEach(field => {
+      if (field in updates) {
+        mappedUpdates[field] = updates[field] ? 1 : 0;
+      }
+    });
+    
+    mappedUpdates.updatedAt = new Date().toISOString();
+    
+    Object.entries(mappedUpdates).forEach(([key, val]) => {
+      setStatements.push(`${key} = ?`);
+      args.push(val);
+    });
+    
+    if (setStatements.length === 0) {
+      return NextResponse.json({ error: 'No updates provided' }, { status: 400 });
     }
     
-    const chatsData = await redis.get(CHATS_KEY);
-    const chats: Chat[] = chatsData ? JSON.parse(chatsData) : [];
-    const index = chats.findIndex(chat => chat.id === chatId);
+    args.push(chatId);
+    const updateQuery = `UPDATE chats SET ${setStatements.join(', ')} WHERE id = ?`;
+    const result = await db.execute({
+      sql: updateQuery,
+      args
+    });
     
-    if (index === -1) {
+    if (result.rowsAffected === 0) {
       return NextResponse.json({ error: 'Chat not found' }, { status: 404 });
     }
     
-    chats[index] = { ...chats[index], ...updates, updatedAt: new Date().toISOString() };
-    await redis.set(CHATS_KEY, JSON.stringify(chats));
+    // Fetch the updated chat to return it
+    const selectResult = await db.execute({
+      sql: `SELECT * FROM chats WHERE id = ?`,
+      args: [chatId]
+    });
+    const chat = mapRowToChat(selectResult.rows[0]);
     
-    return NextResponse.json({ success: true, chat: chats[index] });
+    return NextResponse.json({ success: true, chat });
   } catch (error) {
     console.error('Error updating chat:', error);
     return NextResponse.json({ error: 'Failed to update chat' }, { status: 500 });
@@ -74,19 +97,15 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    if (!redis.isOpen) {
-      await redis.connect();
-    }
+    await initDb();
+    const result = await db.execute({
+      sql: `DELETE FROM chats WHERE id = ?`,
+      args: [chatId]
+    });
     
-    const chatsData = await redis.get(CHATS_KEY);
-    const chats: Chat[] = chatsData ? JSON.parse(chatsData) : [];
-    const filteredChats = chats.filter(chat => chat.id !== chatId);
-    
-    if (filteredChats.length === chats.length) {
+    if (result.rowsAffected === 0) {
       return NextResponse.json({ error: 'Chat not found' }, { status: 404 });
     }
-    
-    await redis.set(CHATS_KEY, JSON.stringify(filteredChats));
     
     return NextResponse.json({ success: true });
   } catch (error) {

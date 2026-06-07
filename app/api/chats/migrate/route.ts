@@ -1,12 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from 'redis';
+import { db, initDb } from '@/lib/db';
 import { Chat } from '@/lib/types';
-
-const CHATS_KEY = 'prompt-journal:chats';
-
-const redis = createClient({
-  url: process.env.REDIS_URL
-});
 
 // POST /api/chats/migrate - Migrate localStorage chats to KV
 export async function POST(request: NextRequest) {
@@ -23,32 +17,49 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid chats data' }, { status: 400 });
     }
     
-    if (!redis.isOpen) {
-      await redis.connect();
-    }
+    await initDb();
     
-    // Get existing chats from Redis
-    const existingChatsData = await redis.get(CHATS_KEY);
-    const existingChats: Chat[] = existingChatsData ? JSON.parse(existingChatsData) : [];
+    // Prepare batch statements
+    const statements = chats.map((chat: Chat) => ({
+      sql: `INSERT OR IGNORE INTO chats (id, slug, title, content, llm, pageType, tags, createdAt, updatedAt, isPublished, isUnlisted, excerpt, views, readingTime, isDraft, lastSaved)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      args: [
+        chat.id,
+        chat.slug,
+        chat.title,
+        chat.content,
+        chat.llm,
+        chat.pageType || 'conversation',
+        JSON.stringify(chat.tags || []),
+        chat.createdAt,
+        chat.updatedAt,
+        chat.isPublished ? 1 : 0,
+        chat.isUnlisted ? 1 : 0,
+        chat.excerpt || '',
+        chat.views || 0,
+        chat.readingTime || 1,
+        chat.isDraft ? 1 : 0,
+        chat.lastSaved || null
+      ]
+    }));
     
-    // Merge chats, avoiding duplicates
-    const mergedChats = [...existingChats];
+    const results = await db.batch(statements);
+    
     let addedCount = 0;
-    
-    chats.forEach((chat: Chat) => {
-      if (chat.id && !mergedChats.find(existing => existing.id === chat.id)) {
-        mergedChats.push(chat);
-        addedCount++;
+    results.forEach(res => {
+      if (res.rowsAffected && res.rowsAffected > 0) {
+        addedCount += Number(res.rowsAffected);
       }
     });
     
-    // Save merged chats
-    await redis.set(CHATS_KEY, JSON.stringify(mergedChats));
+    // Fetch total chats count
+    const countRes = await db.execute(`SELECT COUNT(*) as count FROM chats`);
+    const totalChats = Number(countRes.rows[0].count);
     
     return NextResponse.json({ 
       success: true, 
       message: `Migrated ${addedCount} chats successfully`,
-      totalChats: mergedChats.length
+      totalChats
     });
   } catch (error) {
     console.error('Error migrating chats:', error);

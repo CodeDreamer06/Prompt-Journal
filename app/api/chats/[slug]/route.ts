@@ -1,12 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from 'redis';
-import { Chat } from '@/lib/types';
-
-const CHATS_KEY = 'prompt-journal:chats';
-
-const redis = createClient({
-  url: process.env.REDIS_URL
-});
+import { db, initDb, mapRowToChat } from '@/lib/db';
 
 // GET /api/chats/[slug] - Get specific chat by slug
 export async function GET(
@@ -15,23 +8,25 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
+    await initDb();
     
-    if (!redis.isOpen) {
-      await redis.connect();
-    }
+    const result = await db.execute({
+      sql: `SELECT * FROM chats WHERE slug = ? AND isPublished = 1`,
+      args: [slug]
+    });
     
-    const chatsData = await redis.get(CHATS_KEY);
-    const chats: Chat[] = chatsData ? JSON.parse(chatsData) : [];
-    
-    const chat = chats.find(chat => chat.slug === slug && chat.isPublished);
-    
-    if (!chat) {
+    if (result.rows.length === 0) {
       return NextResponse.json({ error: 'Chat not found' }, { status: 404 });
     }
     
+    const chat = mapRowToChat(result.rows[0]);
+    
     // Increment view count
-    chat.views = (chat.views || 0) + 1;
-    await redis.set(CHATS_KEY, JSON.stringify(chats));
+    await db.execute({
+      sql: `UPDATE chats SET views = views + 1 WHERE id = ?`,
+      args: [chat.id]
+    });
+    chat.views += 1;
     
     return NextResponse.json(chat);
   } catch (error) {

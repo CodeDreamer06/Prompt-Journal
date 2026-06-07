@@ -1,12 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from 'redis';
-import { Chat } from '@/lib/types';
-
-const CHATS_KEY = 'prompt-journal:chats';
-
-const redis = createClient({
-  url: process.env.REDIS_URL
-});
+import { db, initDb, mapRowToChat } from '@/lib/db';
 
 // GET /api/chats/popular - Get most popular chats by view count
 export async function GET(request: NextRequest) {
@@ -14,18 +7,17 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '10');
     
-    if (!redis.isOpen) {
-      await redis.connect();
-    }
+    await initDb();
     
-    const chatsData = await redis.get(CHATS_KEY);
-    const chats: Chat[] = chatsData ? JSON.parse(chatsData) : [];
+    const result = await db.execute({
+      sql: `SELECT * FROM chats
+            WHERE isPublished = 1 AND isUnlisted = 0
+            ORDER BY views DESC
+            LIMIT ?`,
+      args: [limit]
+    });
     
-    // Get published, non-unlisted chats sorted by views
-    const popularChats = chats
-      .filter(chat => chat.isPublished && !chat.isUnlisted)
-      .sort((a, b) => (b.views || 0) - (a.views || 0))
-      .slice(0, limit);
+    const popularChats = result.rows.map(mapRowToChat);
     
     return NextResponse.json(popularChats);
   } catch (error) {

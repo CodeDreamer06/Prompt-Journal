@@ -1,26 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from 'redis';
-import { Chat } from '@/lib/types';
-
-const CHATS_KEY = 'prompt-journal:chats';
-
-const redis = createClient({
-  url: process.env.REDIS_URL
-});
+import { db, initDb, mapRowToChat } from '@/lib/db';
 
 // GET /api/chats - Get all published chats
 export async function GET() {
   try {
-    if (!redis.isOpen) {
-      await redis.connect();
-    }
+    await initDb();
     
-    const chatsData = await redis.get(CHATS_KEY);
-    const chats: Chat[] = chatsData ? JSON.parse(chatsData) : [];
+    const result = await db.execute(`
+      SELECT * FROM chats
+      WHERE isPublished = 1 AND isUnlisted = 0
+      ORDER BY createdAt DESC
+    `);
     
-    // Only return published chats for public API (excluding unlisted)
-    const publishedChats = chats.filter(chat => chat.isPublished && !chat.isUnlisted);
-    return NextResponse.json(publishedChats);
+    const chats = result.rows.map(mapRowToChat);
+    return NextResponse.json(chats);
   } catch (error) {
     console.error('Error fetching chats:', error);
     return NextResponse.json({ error: 'Failed to fetch chats' }, { status: 500 });
@@ -37,19 +30,49 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    if (!redis.isOpen) {
-      await redis.connect();
-    }
+    await initDb();
     
-    // Get existing chats
-    const chatsData = await redis.get(CHATS_KEY);
-    const chats: Chat[] = chatsData ? JSON.parse(chatsData) : [];
+    const {
+      id,
+      slug,
+      title,
+      content,
+      llm,
+      pageType,
+      tags,
+      createdAt,
+      updatedAt,
+      isPublished,
+      isUnlisted,
+      excerpt,
+      views,
+      readingTime,
+      isDraft,
+      lastSaved
+    } = chat;
     
-    // Add new chat
-    chats.push(chat);
-    
-    // Save back to Redis
-    await redis.set(CHATS_KEY, JSON.stringify(chats));
+    await db.execute({
+      sql: `INSERT INTO chats (id, slug, title, content, llm, pageType, tags, createdAt, updatedAt, isPublished, isUnlisted, excerpt, views, readingTime, isDraft, lastSaved)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      args: [
+        id,
+        slug,
+        title,
+        content,
+        llm,
+        pageType,
+        JSON.stringify(tags || []),
+        createdAt,
+        updatedAt,
+        isPublished ? 1 : 0,
+        isUnlisted ? 1 : 0,
+        excerpt || '',
+        views || 0,
+        readingTime || 1,
+        isDraft ? 1 : 0,
+        lastSaved || null
+      ]
+    });
     
     return NextResponse.json({ success: true, chat });
   } catch (error) {
