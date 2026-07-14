@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   title: "Prompt Journal - Share Your LLM Conversations",
   description: "A beautiful blog for sharing LLM conversations with the world. Built with Next.js and Tailwind CSS.",
   keywords: ["LLM", "ChatGPT", "Claude", "Gemini", "GPT-4", "Perplexity", "Llama", "Mistral", "AI", "conversations", "blog"],
-  authors: [{ name: "CodeDreamer06", url: "https://github.com/CodeDreamer06" }],
+  authors: [{ name: "Abhinav-Prabhakar", url: "https://github.com/Abhinav-Prabhakar" }],
   openGraph: {
     title: "Prompt Journal",
     description: "Share your LLM conversations with the world",

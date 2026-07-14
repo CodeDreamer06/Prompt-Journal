@@ -47,7 +47,7 @@ It is built for people who want to preserve the better parts of their LLM usage:
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/CodeDreamer06/Prompt-Journal.git
+git clone https://github.com/Abhinav-Prabhakar/Prompt-Journal.git
 cd Prompt-Journal
 ```
 
@@ -276,10 +276,10 @@ This project is open source and available under the [MIT License](LICENSE).
 
 <div align="center">
 
-**Made with ❤️ by [CodeDreamer06](https://github.com/CodeDreamer06)**
+**Made with ❤️ by [Abhinav-Prabhakar](https://github.com/Abhinav-Prabhakar)**
 
 *Share your AI conversations with the world! 🌟*
 
-[⭐ Star this repo](https://github.com/CodeDreamer06/Prompt-Journal) • [🐛 Report Bug](https://github.com/CodeDreamer06/Prompt-Journal/issues) • [💡 Request Feature](https://github.com/CodeDreamer06/Prompt-Journal/issues)
+[⭐ Star this repo](https://github.com/Abhinav-Prabhakar/Prompt-Journal) • [🐛 Report Bug](https://github.com/Abhinav-Prabhakar/Prompt-Journal/issues) • [💡 Request Feature](https://github.com/Abhinav-Prabhakar/Prompt-Journal/issues)
 
 </div>

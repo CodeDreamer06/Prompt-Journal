@@ -279,11 +279,11 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-ink-2">
             <div>
-              prompt journal &copy; {new Date().getFullYear()} · codedreamer06
+              prompt journal &copy; {new Date().getFullYear()} · abhinav-prabhakar
             </div>
             <div className="flex items-center gap-4">
               <a
-                href="https://github.com/CodeDreamer06"
+                href="https://github.com/Abhinav-Prabhakar"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-accent transition-colors"

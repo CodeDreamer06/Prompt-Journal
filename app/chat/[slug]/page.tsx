@@ -81,7 +81,7 @@ export default function ChatPage() {
           </Link>
         </main>
         <footer className="border-t border-rule py-6 text-center text-xs font-mono text-ink-2">
-          prompt journal · codedreamer06
+          prompt journal · abhinav-prabhakar
         </footer>
       </div>
     );

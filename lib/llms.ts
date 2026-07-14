@@ -98,5 +98,12 @@ export const LLM_CONFIGS: Record<LLMType, LLMConfig> = {
     color: 'border-cyan-500',
     textColor: 'text-cyan-600 dark:text-cyan-400',
     bgColor: 'bg-cyan-50 dark:bg-cyan-950'
+  },
+  'glm-5.2': {
+    name: 'GLM 5.2',
+    logo: '/logos/glm.svg',
+    color: 'border-indigo-500',
+    textColor: 'text-indigo-600 dark:text-indigo-400',
+    bgColor: 'bg-indigo-50 dark:bg-indigo-950'
   }
 };
